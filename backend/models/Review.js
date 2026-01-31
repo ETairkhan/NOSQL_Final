@@ -6,9 +6,9 @@ const reviewSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  product: {
+  bicycle: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
+    ref: 'Bicycle',
     required: true
   },
   order: {
@@ -48,9 +48,9 @@ const reviewSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Compound index to ensure one review per user per product
-reviewSchema.index({ user: 1, product: 1 }, { unique: true });
-reviewSchema.index({ product: 1, rating: -1 });
+// Compound index to ensure one review per user per bicycle
+reviewSchema.index({ user: 1, bicycle: 1 }, { unique: true });
+reviewSchema.index({ bicycle: 1, rating: -1 });
 reviewSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Review', reviewSchema);

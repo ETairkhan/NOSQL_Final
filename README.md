@@ -1,10 +1,10 @@
-# E-Commerce Platform - NoSQL Final Project
+# Bicycle Store - NoSQL Final Project
 
-Полнофункциональная платформа электронной коммерции, построенная с использованием MongoDB (NoSQL), Node.js/Express для backend и Next.js для frontend.
+Полнофункциональный магазин велосипедов, построенный с использованием MongoDB (NoSQL), Node.js/Express для backend и Next.js для frontend.
 
 ## 📋 Описание проекта
 
-Это веб-приложение для интернет-магазина, которое демонстрирует продвинутые возможности работы с MongoDB, включая:
+Это веб-приложение для магазина велосипедов, которое демонстрирует продвинутые возможности работы с MongoDB, включая:
 - Embedded и referenced документы
 - Многоэтапные aggregation pipelines
 - Advanced update/delete операции
@@ -16,11 +16,12 @@
 ### Backend
 - **Технологии**: Node.js, Express.js, MongoDB (Mongoose)
 - **Архитектура**: RESTful API
-- **База данных**: MongoDB
+- **База данных**: MongoDB (bicyclestore)
 
 ### Frontend
 - **Технологии**: Next.js 14, React, TypeScript, TailwindCSS
 - **Архитектура**: Server-side rendering с клиентскими компонентами
+- **Тематика**: Магазин велосипедов
 
 ## 📦 Структура проекта
 
@@ -65,10 +66,10 @@ final2/
 - `username: 1`
 - `role: 1`
 
-#### 2. Categories
+#### 2. BicycleTypes
 ```javascript
 {
-  name: String (unique, required),
+  name: String (unique, required), // Горный, Шоссейный, Городской и т.д.
   slug: String (unique),
   description: String,
   image: String,
@@ -80,7 +81,7 @@ final2/
 - `slug: 1`
 - `isActive: 1`
 
-#### 3. Products
+#### 3. Bicycles
 ```javascript
 {
   name: String (required),
@@ -90,13 +91,33 @@ final2/
   discountPrice: Number,
   stock: Number,
   images: [String],
-  category: ObjectId (ref: Category),  // Referenced
+  type: ObjectId (ref: BicycleType),  // Referenced
   specifications: {  // Embedded document
     brand: String,
+    frame: {
+      material: String, // aluminum, carbon, steel, titanium
+      size: String // XS, S, M, L, XL
+    },
+    wheels: {
+      size: String, // 26", 27.5", 29", 700c
+      type: String // mountain, road, hybrid
+    },
+    gears: {
+      front: Number,
+      rear: Number,
+      total: Number
+    },
+    brakes: {
+      type: String, // disc, rim, hydraulic
+      brand: String
+    },
     weight: String,
-    dimensions: String,
     color: String,
-    material: String
+    suspension: {
+      front: Boolean,
+      rear: Boolean,
+      type: String // hardtail, full-suspension, rigid
+    }
   },
   ratingSummary: {  // Embedded document
     averageRating: Number,
@@ -106,9 +127,10 @@ final2/
 ```
 
 **Compound Indexes:**
-- `{ category: 1, isActive: 1 }`
+- `{ type: 1, isActive: 1 }`
 - `{ price: 1, isActive: 1 }`
 - `{ 'ratingSummary.averageRating': -1 }`
+- `{ 'specifications.brand': 1 }`
 
 #### 4. Orders
 ```javascript
@@ -138,7 +160,7 @@ final2/
 ```javascript
 {
   user: ObjectId (ref: User),  // Referenced
-  product: ObjectId (ref: Product),  // Referenced
+  bicycle: ObjectId (ref: Bicycle),  // Referenced
   order: ObjectId (ref: Order),
   rating: Number (1-5),
   title: String,
@@ -160,20 +182,20 @@ final2/
 - `POST /api/auth/login` - Вход в систему
 - `GET /api/auth/me` - Получить текущего пользователя
 
-### Products (`/api/products`)
-- `GET /api/products` - Получить все товары (с фильтрацией, пагинацией, сортировкой)
-- `GET /api/products/:id` - Получить товар по ID
-- `POST /api/products` - Создать товар (Admin only)
-- `PUT /api/products/:id` - Обновить товар (Admin only)
-- `PATCH /api/products/:id/stock` - Обновить количество на складе (Advanced: `$inc`)
-- `DELETE /api/products/:id` - Удалить товар (Admin only, soft delete)
+### Bicycles (`/api/bicycles`)
+- `GET /api/bicycles` - Получить все велосипеды (с фильтрацией, пагинацией, сортировкой)
+- `GET /api/bicycles/:id` - Получить велосипед по ID
+- `POST /api/bicycles` - Создать велосипед (Admin only)
+- `PUT /api/bicycles/:id` - Обновить велосипед (Admin only)
+- `PATCH /api/bicycles/:id/stock` - Обновить количество на складе (Advanced: `$inc`)
+- `DELETE /api/bicycles/:id` - Удалить велосипед (Admin only, soft delete)
 
-### Categories (`/api/categories`)
-- `GET /api/categories` - Получить все категории
-- `GET /api/categories/:id` - Получить категорию по ID
-- `POST /api/categories` - Создать категорию (Admin only)
-- `PUT /api/categories/:id` - Обновить категорию (Admin only)
-- `DELETE /api/categories/:id` - Удалить категорию (Admin only)
+### BicycleTypes (`/api/types`)
+- `GET /api/types` - Получить все типы велосипедов
+- `GET /api/types/:id` - Получить тип по ID
+- `POST /api/types` - Создать тип (Admin only)
+- `PUT /api/types/:id` - Обновить тип (Admin only)
+- `DELETE /api/types/:id` - Удалить тип (Admin only)
 
 ### Orders (`/api/orders`)
 - `GET /api/orders` - Получить заказы (свои или все для admin)
@@ -192,8 +214,8 @@ final2/
 
 ### Statistics (`/api/stats`) - Aggregation Endpoints
 - `GET /api/stats/sales` - Статистика продаж (Admin only)
-- `GET /api/stats/products` - Топ продаваемых товаров (Admin only)
-- `GET /api/stats/categories` - Статистика по категориям (Admin only)
+- `GET /api/stats/bicycles` - Топ продаваемых велосипедов (Admin only)
+- `GET /api/stats/types` - Статистика по типам велосипедов (Admin only)
 - `GET /api/stats/reviews` - Статистика отзывов
 - `GET /api/stats/overview` - Общая статистика (Admin only)
 
@@ -205,9 +227,9 @@ final2/
 
 #### Update Stock with $inc
 ```javascript
-// PATCH /api/products/:id/stock
-Product.findByIdAndUpdate(
-  productId,
+// PATCH /api/bicycles/:id/stock
+Bicycle.findByIdAndUpdate(
+  bicycleId,
   { $inc: { stock: quantity } },
   { new: true }
 )
@@ -259,14 +281,14 @@ Order.aggregate([
 ])
 ```
 
-#### Top Selling Products
+#### Top Selling Bicycles
 ```javascript
 Order.aggregate([
   { $match: { status: { $ne: 'cancelled' } } },
   { $unwind: '$items' },
   {
     $group: {
-      _id: '$items.product',
+      _id: '$items.bicycle',
       totalSold: { $sum: '$items.quantity' },
       totalRevenue: { $sum: '$items.subtotal' }
     }
@@ -275,43 +297,43 @@ Order.aggregate([
   { $limit: 10 },
   {
     $lookup: {
-      from: 'products',
+      from: 'bicycles',
       localField: '_id',
       foreignField: '_id',
-      as: 'product'
+      as: 'bicycle'
     }
   },
-  { $unwind: '$product' }
+  { $unwind: '$bicycle' }
 ])
 ```
 
-#### Sales by Category
+#### Sales by Bicycle Type
 ```javascript
 Order.aggregate([
   { $match: { status: { $ne: 'cancelled' } } },
   { $unwind: '$items' },
   {
     $lookup: {
-      from: 'products',
-      localField: 'items.product',
+      from: 'bicycles',
+      localField: 'items.bicycle',
       foreignField: '_id',
-      as: 'product'
+      as: 'bicycle'
     }
   },
-  { $unwind: '$product' },
+  { $unwind: '$bicycle' },
   {
     $lookup: {
-      from: 'categories',
-      localField: 'product.category',
+      from: 'bicycletypes',
+      localField: 'bicycle.type',
       foreignField: '_id',
-      as: 'category'
+      as: 'type'
     }
   },
-  { $unwind: '$category' },
+  { $unwind: '$type' },
   {
     $group: {
-      _id: '$category._id',
-      categoryName: { $first: '$category.name' },
+      _id: '$type._id',
+      typeName: { $first: '$type.name' },
       totalSold: { $sum: '$items.quantity' },
       totalRevenue: { $sum: '$items.subtotal' }
     }
@@ -320,10 +342,10 @@ Order.aggregate([
 ])
 ```
 
-#### Update Product Rating Summary
+#### Update Bicycle Rating Summary
 ```javascript
 Review.aggregate([
-  { $match: { product: productId } },
+  { $match: { bicycle: bicycleId } },
   {
     $group: {
       _id: null,
@@ -336,10 +358,10 @@ Review.aggregate([
 
 ### 3. Advanced Delete Operations
 
-#### Soft Delete Product
+#### Soft Delete Bicycle
 ```javascript
-Product.findByIdAndUpdate(
-  productId,
+Bicycle.findByIdAndUpdate(
+  bicycleId,
   { $set: { isActive: false } },
   { new: true }
 )
@@ -349,8 +371,8 @@ Product.findByIdAndUpdate(
 ```javascript
 // Restore stock for each item
 for (const item of order.items) {
-  await Product.findByIdAndUpdate(
-    item.product,
+  await Bicycle.findByIdAndUpdate(
+    item.bicycle,
     { $inc: { stock: item.quantity } }
   )
 }
@@ -366,9 +388,9 @@ await order.save()
 
 ## 📱 Frontend Pages
 
-1. **Home** (`/`) - Главная страница с популярными товарами
-2. **Products** (`/products`) - Каталог товаров с фильтрацией
-3. **Product Detail** (`/products/:id`) - Детальная страница товара с отзывами
+1. **Home** (`/`) - Главная страница с популярными велосипедами
+2. **Bicycles** (`/bicycles`) - Каталог велосипедов с фильтрацией
+3. **Bicycle Detail** (`/bicycles/:id`) - Детальная страница велосипеда с отзывами
 4. **Login** (`/login`) - Страница входа
 5. **Register** (`/register`) - Страница регистрации
 6. **Orders** (`/orders`) - Страница заказов пользователя
@@ -444,8 +466,8 @@ npm run create-admin
 
 ### Embedded vs Referenced Documents
 
-- **Embedded**: `specifications`, `ratingSummary` в Product, `items` в Order, `address` в User
-- **Referenced**: `category` в Product, `user` в Order/Review, `product` в Order/Review
+- **Embedded**: `specifications` (frame, wheels, gears, brakes, suspension), `ratingSummary` в Bicycle, `items` в Order, `address` в User
+- **Referenced**: `type` в Bicycle, `user` в Order/Review, `bicycle` в Order/Review
 
 ### Advanced MongoDB Operations
 
@@ -456,10 +478,11 @@ npm run create-admin
 
 ### Business Logic
 
-- Автоматическое обновление рейтинга товара при добавлении отзыва
-- Восстановление товара на складе при отмене заказа
-- Проверка наличия товара при создании заказа
+- Автоматическое обновление рейтинга велосипеда при добавлении отзыва
+- Восстановление велосипеда на складе при отмене заказа
+- Проверка наличия велосипеда при создании заказа
 - Верификация отзывов для пользователей, сделавших заказ
+- Детальные спецификации велосипедов (рама, колеса, передачи, тормоза, подвеска)
 
 ## 📝 Дополнительные функции
 

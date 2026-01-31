@@ -1,6 +1,6 @@
 const express = require('express');
 const Order = require('../models/Order');
-const Product = require('../models/Product');
+const Bicycle = require('../models/Bicycle');
 const Review = require('../models/Review');
 const User = require('../models/User');
 const { authenticate, authorize } = require('../middleware/auth');
@@ -63,19 +63,19 @@ router.get('/sales', authenticate, authorize('admin'), async (req, res) => {
   }
 });
 
-// @route   GET /api/stats/products
-// @desc    Get top selling products (Aggregation pipeline)
+// @route   GET /api/stats/bicycles
+// @desc    Get top selling bicycles (Aggregation pipeline)
 // @access  Private (Admin only)
-router.get('/products', authenticate, authorize('admin'), async (req, res) => {
+router.get('/bicycles', authenticate, authorize('admin'), async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 10;
 
-    const topProducts = await Order.aggregate([
+    const topBicycles = await Order.aggregate([
       { $match: { status: { $ne: 'cancelled' } } },
       { $unwind: '$items' },
       {
         $group: {
-          _id: '$items.product',
+          _id: '$items.bicycle',
           totalSold: { $sum: '$items.quantity' },
           totalRevenue: { $sum: '$items.subtotal' }
         }
@@ -84,62 +84,62 @@ router.get('/products', authenticate, authorize('admin'), async (req, res) => {
       { $limit: limit },
       {
         $lookup: {
-          from: 'products',
+          from: 'bicycles',
           localField: '_id',
           foreignField: '_id',
-          as: 'product'
+          as: 'bicycle'
         }
       },
-      { $unwind: '$product' },
+      { $unwind: '$bicycle' },
       {
         $project: {
           _id: 0,
-          productId: '$_id',
-          productName: '$product.name',
-          productSlug: '$product.slug',
+          bicycleId: '$_id',
+          bicycleName: '$bicycle.name',
+          bicycleSlug: '$bicycle.slug',
           totalSold: 1,
           totalRevenue: { $round: ['$totalRevenue', 2] }
         }
       }
     ]);
 
-    res.json(topProducts);
+    res.json(topBicycles);
   } catch (error) {
-    console.error('Get top products error:', error);
+    console.error('Get top bicycles error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// @route   GET /api/stats/categories
-// @desc    Get sales by category (Aggregation pipeline)
+// @route   GET /api/stats/types
+// @desc    Get sales by bicycle type (Aggregation pipeline)
 // @access  Private (Admin only)
-router.get('/categories', authenticate, authorize('admin'), async (req, res) => {
+router.get('/types', authenticate, authorize('admin'), async (req, res) => {
   try {
-    const categoryStats = await Order.aggregate([
+    const typeStats = await Order.aggregate([
       { $match: { status: { $ne: 'cancelled' } } },
       { $unwind: '$items' },
       {
         $lookup: {
-          from: 'products',
-          localField: 'items.product',
+          from: 'bicycles',
+          localField: 'items.bicycle',
           foreignField: '_id',
-          as: 'product'
+          as: 'bicycle'
         }
       },
-      { $unwind: '$product' },
+      { $unwind: '$bicycle' },
       {
         $lookup: {
-          from: 'categories',
-          localField: 'product.category',
+          from: 'bicycletypes',
+          localField: 'bicycle.type',
           foreignField: '_id',
-          as: 'category'
+          as: 'type'
         }
       },
-      { $unwind: '$category' },
+      { $unwind: '$type' },
       {
         $group: {
-          _id: '$category._id',
-          categoryName: { $first: '$category.name' },
+          _id: '$type._id',
+          typeName: { $first: '$type.name' },
           totalSold: { $sum: '$items.quantity' },
           totalRevenue: { $sum: '$items.subtotal' }
         }
@@ -148,17 +148,17 @@ router.get('/categories', authenticate, authorize('admin'), async (req, res) => 
       {
         $project: {
           _id: 0,
-          categoryId: '$_id',
-          categoryName: 1,
+          typeId: '$_id',
+          typeName: 1,
           totalSold: 1,
           totalRevenue: { $round: ['$totalRevenue', 2] }
         }
       }
     ]);
 
-    res.json(categoryStats);
+    res.json(typeStats);
   } catch (error) {
-    console.error('Get category stats error:', error);
+    console.error('Get type stats error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -219,26 +219,26 @@ router.get('/reviews', async (req, res) => {
 // @access  Private (Admin only)
 router.get('/overview', authenticate, authorize('admin'), async (req, res) => {
   try {
-    const [totalUsers, totalProducts, totalOrders, totalReviews] = await Promise.all([
+    const [totalUsers, totalBicycles, totalOrders, totalReviews] = await Promise.all([
       User.countDocuments(),
-      Product.countDocuments({ isActive: true }),
+      Bicycle.countDocuments({ isActive: true }),
       Order.countDocuments(),
       Review.countDocuments()
     ]);
 
     const pendingOrders = await Order.countDocuments({ status: 'pending' });
-    const lowStockProducts = await Product.countDocuments({
+    const lowStockBicycles = await Bicycle.countDocuments({
       isActive: true,
       stock: { $lt: 10 }
     });
 
     res.json({
       users: totalUsers,
-      products: totalProducts,
+      bicycles: totalBicycles,
       orders: totalOrders,
       reviews: totalReviews,
       pendingOrders,
-      lowStockProducts
+      lowStockBicycles
     });
   } catch (error) {
     console.error('Get overview stats error:', error);

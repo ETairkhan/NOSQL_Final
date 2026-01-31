@@ -17,7 +17,7 @@ export interface User {
   createdAt: string
 }
 
-export interface Category {
+export interface BicycleType {
   _id: string
   name: string
   slug: string
@@ -27,7 +27,7 @@ export interface Category {
   createdAt: string
 }
 
-export interface Product {
+export interface Bicycle {
   _id: string
   name: string
   slug: string
@@ -36,13 +36,33 @@ export interface Product {
   discountPrice?: number
   stock: number
   images?: string[]
-  category: Category | string
+  type: BicycleType | string
   specifications?: {
     brand?: string
+    frame?: {
+      material?: string
+      size?: string
+    }
+    wheels?: {
+      size?: string
+      type?: string
+    }
+    gears?: {
+      front?: number
+      rear?: number
+      total?: number
+    }
+    brakes?: {
+      type?: string
+      brand?: string
+    }
     weight?: string
-    dimensions?: string
     color?: string
-    material?: string
+    suspension?: {
+      front?: boolean
+      rear?: boolean
+      type?: string
+    }
   }
   ratingSummary?: {
     averageRating: number
@@ -53,7 +73,7 @@ export interface Product {
 }
 
 export interface OrderItem {
-  product: Product | string
+  bicycle: Bicycle | string
   quantity: number
   price: number
   subtotal: number
@@ -82,7 +102,7 @@ export interface Order {
 export interface Review {
   _id: string
   user: User | string
-  product: Product | string
+  bicycle: Bicycle | string
   order?: string
   rating: number
   title?: string
@@ -91,4 +111,3 @@ export interface Review {
   helpfulCount: number
   createdAt: string
 }
-

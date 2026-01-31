@@ -12,8 +12,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/products', require('./routes/products'));
-app.use('/api/categories', require('./routes/categories'));
+app.use('/api/bicycles', require('./routes/bicycles'));
+app.use('/api/types', require('./routes/bicycleTypes'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/stats', require('./routes/stats'));
@@ -33,7 +33,7 @@ app.use((req, res) => {
 });
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/bicyclestore', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })

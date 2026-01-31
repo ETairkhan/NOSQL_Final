@@ -3,23 +3,23 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { api } from '@/lib/api'
-import type { Product, Category } from '@/types'
+import type { Bicycle, BicycleType } from '@/types'
 
 export default function Home() {
-  const [products, setProducts] = useState<Product[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
+  const [bicycles, setBicycles] = useState<Bicycle[]>([])
+  const [types, setTypes] = useState<BicycleType[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState<string>('')
+  const [selectedType, setSelectedType] = useState<string>('')
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          api.get('/products?limit=8'),
-          api.get('/categories')
+        const [bicyclesRes, typesRes] = await Promise.all([
+          api.get('/bicycles?limit=8'),
+          api.get('/types')
         ])
-        setProducts(productsRes.data.products || [])
-        setCategories(categoriesRes.data || [])
+        setBicycles(bicyclesRes.data.bicycles || [])
+        setTypes(typesRes.data || [])
       } catch (error) {
         console.error('Error fetching data:', error)
       } finally {
@@ -30,19 +30,19 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchBicycles = async () => {
       try {
-        const url = selectedCategory 
-          ? `/products?category=${selectedCategory}&limit=8`
-          : '/products?limit=8'
+        const url = selectedType 
+          ? `/bicycles?type=${selectedType}&limit=8`
+          : '/bicycles?limit=8'
         const res = await api.get(url)
-        setProducts(res.data.products || [])
+        setBicycles(res.data.bicycles || [])
       } catch (error) {
-        console.error('Error fetching products:', error)
+        console.error('Error fetching bicycles:', error)
       }
     }
-    fetchProducts()
-  }, [selectedCategory])
+    fetchBicycles()
+  }, [selectedType])
 
   if (loading) {
     return (
@@ -56,58 +56,58 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Добро пожаловать в наш магазин
+          Добро пожаловать в наш магазин велосипедов
         </h1>
         <p className="text-gray-600 text-lg">
-          Откройте для себя лучшие товары по выгодным ценам
+          Откройте для себя лучшие велосипеды для любого стиля езды
         </p>
       </div>
 
-      {/* Categories Filter */}
+      {/* Types Filter */}
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Категории</h2>
+        <h2 className="text-2xl font-semibold mb-4">Типы велосипедов</h2>
         <div className="flex flex-wrap gap-2">
           <button
-            onClick={() => setSelectedCategory('')}
+            onClick={() => setSelectedType('')}
             className={`px-4 py-2 rounded-lg transition-colors ${
-              selectedCategory === ''
+              selectedType === ''
                 ? 'bg-primary-600 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
           >
-            Все товары
+            Все велосипеды
           </button>
-          {categories.map((category) => (
+          {types.map((type) => (
             <button
-              key={category._id}
-              onClick={() => setSelectedCategory(category._id)}
+              key={type._id}
+              onClick={() => setSelectedType(type._id)}
               className={`px-4 py-2 rounded-lg transition-colors ${
-                selectedCategory === category._id
+                selectedType === type._id
                   ? 'bg-primary-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
             >
-              {category.name}
+              {type.name}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Products Grid */}
+      {/* Bicycles Grid */}
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Популярные товары</h2>
+        <h2 className="text-2xl font-semibold mb-4">Популярные велосипеды</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
+          {bicycles.map((bicycle) => (
             <Link
-              key={product._id}
-              href={`/products/${product._id}`}
+              key={bicycle._id}
+              href={`/bicycles/${bicycle._id}`}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
             >
               <div className="aspect-w-16 aspect-h-9 bg-gray-200">
-                {product.images && product.images.length > 0 ? (
+                {bicycle.images && bicycle.images.length > 0 ? (
                   <img
-                    src={product.images[0]}
-                    alt={product.name}
+                    src={bicycle.images[0]}
+                    alt={bicycle.name}
                     className="w-full h-48 object-cover"
                   />
                 ) : (
@@ -118,35 +118,35 @@ export default function Home() {
               </div>
               <div className="p-4">
                 <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                  {product.name}
+                  {bicycle.name}
                 </h3>
                 <div className="flex items-center justify-between">
                   <div>
-                    {product.discountPrice > 0 ? (
+                    {bicycle.discountPrice > 0 ? (
                       <div>
                         <span className="text-2xl font-bold text-primary-600">
-                          {product.discountPrice.toFixed(2)} ₽
+                          {bicycle.discountPrice.toFixed(2)} ₽
                         </span>
                         <span className="text-sm text-gray-500 line-through ml-2">
-                          {product.price.toFixed(2)} ₽
+                          {bicycle.price.toFixed(2)} ₽
                         </span>
                       </div>
                     ) : (
                       <span className="text-2xl font-bold text-primary-600">
-                        {product.price.toFixed(2)} ₽
+                        {bicycle.price.toFixed(2)} ₽
                       </span>
                     )}
                   </div>
-                  {product.ratingSummary && product.ratingSummary.averageRating > 0 && (
+                  {bicycle.ratingSummary && bicycle.ratingSummary.averageRating > 0 && (
                     <div className="flex items-center">
                       <span className="text-yellow-500">★</span>
                       <span className="ml-1 text-sm">
-                        {product.ratingSummary.averageRating.toFixed(1)}
+                        {bicycle.ratingSummary.averageRating.toFixed(1)}
                       </span>
                     </div>
                   )}
                 </div>
-                {product.stock === 0 && (
+                {bicycle.stock === 0 && (
                   <div className="mt-2 text-red-500 text-sm">Нет в наличии</div>
                 )}
               </div>
@@ -157,13 +157,12 @@ export default function Home() {
 
       <div className="text-center">
         <Link
-          href="/products"
+          href="/bicycles"
           className="inline-block px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
         >
-          Посмотреть все товары
+          Посмотреть все велосипеды
         </Link>
       </div>
     </div>
   )
 }
-

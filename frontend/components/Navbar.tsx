@@ -16,14 +16,14 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
             <Link href="/" className="text-2xl font-bold text-primary-600">
-              E-Commerce
+              Bicycle Store
             </Link>
             <div className="hidden md:flex space-x-4">
               <Link
-                href="/products"
+                href="/bicycles"
                 className="text-gray-700 hover:text-primary-600 transition-colors"
               >
-                Товары
+                Велосипеды
               </Link>
               {isAuthenticated && (
                 <>

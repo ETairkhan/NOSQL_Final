@@ -1,7 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const Order = require('../models/Order');
-const Product = require('../models/Product');
+const Bicycle = require('../models/Bicycle');
 const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
@@ -15,7 +15,7 @@ router.get('/', authenticate, async (req, res) => {
     
     const orders = await Order.find(query)
       .populate('user', 'username email')
-      .populate('items.product', 'name slug images price')
+      .populate('items.bicycle', 'name slug images price')
       .sort({ orderDate: -1 });
 
     res.json(orders);
@@ -37,7 +37,7 @@ router.get('/:id', authenticate, async (req, res) => {
 
     const order = await Order.findOne(query)
       .populate('user', 'username email profile')
-      .populate('items.product', 'name slug images price');
+      .populate('items.bicycle', 'name slug images price');
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
@@ -58,7 +58,7 @@ router.get('/:id', authenticate, async (req, res) => {
 // @access  Private
 router.post('/', authenticate, [
   body('items').isArray({ min: 1 }).withMessage('Order must have at least one item'),
-  body('items.*.product').isMongoId().withMessage('Valid product ID required'),
+  body('items.*.bicycle').isMongoId().withMessage('Valid bicycle ID required'),
   body('items.*.quantity').isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
   body('paymentMethod').isIn(['credit_card', 'paypal', 'cash_on_delivery']).withMessage('Invalid payment method'),
   body('shippingAddress').isObject().withMessage('Shipping address is required')
@@ -76,28 +76,28 @@ router.post('/', authenticate, [
     const orderItems = [];
 
     for (const item of items) {
-      const product = await Product.findById(item.product);
-      if (!product || !product.isActive) {
-        return res.status(400).json({ message: `Product ${item.product} not found or inactive` });
+      const bicycle = await Bicycle.findById(item.bicycle);
+      if (!bicycle || !bicycle.isActive) {
+        return res.status(400).json({ message: `Bicycle ${item.bicycle} not found or inactive` });
       }
 
-      if (product.stock < item.quantity) {
-        return res.status(400).json({ message: `Insufficient stock for product ${product.name}` });
+      if (bicycle.stock < item.quantity) {
+        return res.status(400).json({ message: `Insufficient stock for bicycle ${bicycle.name}` });
       }
 
-      const price = product.discountPrice > 0 ? product.discountPrice : product.price;
+      const price = bicycle.discountPrice > 0 ? bicycle.discountPrice : bicycle.price;
       const subtotal = price * item.quantity;
       totalAmount += subtotal;
 
       orderItems.push({
-        product: product._id,
+        bicycle: bicycle._id,
         quantity: item.quantity,
         price,
         subtotal
       });
 
-      // Update product stock
-      await Product.findByIdAndUpdate(product._id, {
+      // Update bicycle stock
+      await Bicycle.findByIdAndUpdate(bicycle._id, {
         $inc: { stock: -item.quantity }
       });
     }
@@ -116,7 +116,7 @@ router.post('/', authenticate, [
     });
 
     await order.save();
-    await order.populate('items.product', 'name slug images price');
+    await order.populate('items.bicycle', 'name slug images price');
 
     res.status(201).json(order);
   } catch (error) {
@@ -148,7 +148,7 @@ router.patch('/:id/status', authenticate, authorize('admin'), [
       req.params.id,
       { $set: updateData },
       { new: true, runValidators: true }
-    ).populate('items.product', 'name slug images price');
+    ).populate('items.bicycle', 'name slug images price');
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
@@ -177,10 +177,10 @@ router.delete('/:id', authenticate, async (req, res) => {
       return res.status(404).json({ message: 'Order not found or cannot be cancelled' });
     }
 
-    // Restore product stock if order is cancelled
+    // Restore bicycle stock if order is cancelled
     if (order.status !== 'cancelled') {
       for (const item of order.items) {
-        await Product.findByIdAndUpdate(item.product, {
+        await Bicycle.findByIdAndUpdate(item.bicycle, {
           $inc: { stock: item.quantity }
         });
       }

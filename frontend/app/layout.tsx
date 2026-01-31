@@ -7,8 +7,8 @@ import { AuthProvider } from '@/context/AuthContext'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'E-Commerce Platform',
-  description: 'Modern e-commerce platform built with Next.js and MongoDB',
+  title: 'Bicycle Store',
+  description: 'Магазин велосипедов - лучшие модели для любого стиля езды',
 }
 
 export default function RootLayout({
