@@ -497,7 +497,7 @@ npm run create-admin
 
 ## 👥 Вклад студентов
 
-Yermek Tairkhan
+Yermek Tairkhan,
 Abilkaiyr Uzbekbay
 
 ## 📄 Лицензия
