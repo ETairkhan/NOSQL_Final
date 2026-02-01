@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const createAdmin = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/bicyclestore');
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://Abilkaiyr:Takanashi_13@cluster0.wpjd2lz.mongodb.net/bicycle_store');
     console.log('Connected to MongoDB');
 
     // Check if admin exists
