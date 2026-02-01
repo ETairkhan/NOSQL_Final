@@ -1,21 +1,22 @@
-# 🚀 Быстрый старт - Bicycle Store
+# 🚀 Quick Start - Bicycle Store
 
-## Предварительные требования
+## Prerequisites
 
-1. **Node.js** версии 18 или выше
-2. **MongoDB** (локально или MongoDB Atlas)
-3. **npm** или **yarn**
+1. **Node.js** version 18 or higher
+2. **MongoDB** (local or MongoDB Atlas)
+3. **npm** or **yarn**
 
-## Шаг 1: Установка зависимостей
+## Step 1: Install Dependencies
 
 ```bash
-# Установка всех зависимостей (корневая, backend, frontend)
+# Install all dependencies (root, backend, frontend)
 npm run install:all
 ```
 
-Или вручную:
+Or manually:
+
 ```bash
-# В корневой директории
+# In root directory
 npm install
 
 # Backend
@@ -27,16 +28,16 @@ cd ../frontend
 npm install
 ```
 
-## Шаг 2: Настройка Backend
+## Step 2: Backend Setup
 
-### 2.1 Создайте файл `.env` в папке `backend/`
+### 2.1 Create `.env` file in `backend/` folder
 
 ```bash
 cd backend
 copy .env.example .env
 ```
 
-Или создайте файл `.env` вручную со следующим содержимым:
+Or create `.env` file manually with the following content:
 
 ```env
 PORT=5000
@@ -45,146 +46,157 @@ JWT_SECRET=your_super_secret_jwt_key_change_in_production_12345
 NODE_ENV=development
 ```
 
-**Важно:** 
-- Если используете MongoDB Atlas, замените `MONGODB_URI` на ваш connection string
-- Измените `JWT_SECRET` на случайную строку для безопасности
+**Important:**
 
-### 2.2 Убедитесь, что MongoDB запущен
+- If using MongoDB Atlas, replace `MONGODB_URI` with your connection string
+- Change `JWT_SECRET` to a random string for security
 
-**Локально:**
+### 2.2 Make sure MongoDB is running
+
+**Local:**
+
 ```bash
-# Windows (если MongoDB установлен как сервис, он должен быть запущен автоматически)
-# Проверьте в Services (services.msc)
+# Windows (if MongoDB is installed as a service, it should start automatically)
+# Check in Services (services.msc)
 
-# Или запустите вручную:
+# Or start manually:
 mongod
 ```
 
 **MongoDB Atlas:**
-- Используйте connection string из вашего кластера
 
-### 2.3 Создайте админ-пользователя
+- Use connection string from your cluster
+
+### 2.3 Create admin user
 
 ```bash
 cd backend
 npm run create-admin
 ```
 
-Будут созданы учетные данные:
+Credentials will be created:
+
 - **Email:** `admin@example.com`
 - **Password:** `admin123`
 
-⚠️ **Важно:** Измените пароль после первого входа!
+⚠️ **Important:** Change password after first login!
 
-## Шаг 3: Настройка Frontend
+## Step 3: Frontend Setup
 
-### 3.1 Создайте файл `.env.local` в папке `frontend/`
+### 3.1 Create `.env.local` file in `frontend/` folder
 
 ```bash
 cd frontend
 ```
 
-Создайте файл `.env.local` со следующим содержимым:
+Create `.env.local` file with the following content:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
 ```
 
-## Шаг 4: Запуск приложения
+## Step 4: Launch Application
 
-### Вариант 1: Запуск всего проекта одновременно (рекомендуется)
+### Option 1: Launch entire project simultaneously (recommended)
 
 ```bash
-# В корневой директории
+# In root directory
 npm run dev
 ```
 
-Это запустит:
-- Backend на `http://localhost:5000`
-- Frontend на `http://localhost:3000`
+This will start:
 
-### Вариант 2: Запуск по отдельности
+- Backend on `http://localhost:5000`
+- Frontend on `http://localhost:3000`
 
-**Терминал 1 - Backend:**
+### Option 2: Launch separately
+
+**Terminal 1 - Backend:**
+
 ```bash
 cd backend
 npm run dev
 ```
 
-**Терминал 2 - Frontend:**
+**Terminal 2 - Frontend:**
+
 ```bash
 cd frontend
 npm run dev
 ```
 
-## Шаг 5: Откройте приложение
+## Step 5: Open Application
 
-Откройте браузер и перейдите по адресу:
+Open browser and go to:
+
 - **Frontend:** http://localhost:3000
 - **Backend API:** http://localhost:5000/api
 
-## 🔐 Тестовые учетные данные
+## 🔐 Test Credentials
 
-### Админ
+### Admin
+
 - Email: `admin@example.com`
 - Password: `admin123`
 
-### Обычный пользователь
-Создайте через форму регистрации на сайте.
+### Regular User
 
-## 📝 Проверка работы
+Create through registration form on the site.
 
-1. Откройте http://localhost:3000
-2. Зарегистрируйтесь или войдите как админ
-3. Проверьте каталог велосипедов
-4. Админ-панель доступна по адресу `/admin` (только для админов)
+## 📝 Check Functionality
 
-## ⚠️ Возможные проблемы
+1. Open http://localhost:3000
+2. Register or login as admin
+3. Check bicycle catalog
+4. Admin panel available at `/admin` (admins only)
 
-### MongoDB не подключается
-- Убедитесь, что MongoDB запущен
-- Проверьте `MONGODB_URI` в `.env`
-- Для MongoDB Atlas проверьте IP whitelist
+## ⚠️ Possible Issues
 
-### Порт уже занят
-- Измените `PORT` в `backend/.env`
-- Или остановите процесс, использующий порт 5000/3000
+### MongoDB not connecting
 
-### Ошибки при установке зависимостей
+- Make sure MongoDB is running
+- Check `MONGODB_URI` in `.env`
+- For MongoDB Atlas check IP whitelist
+
+### Port already in use
+
+- Change `PORT` in `backend/.env`
+- Or stop process using port 5000/3000
+
+### Dependency installation errors
+
 ```bash
-# Очистите кэш и переустановите
+# Clear cache and reinstall
 npm cache clean --force
 rm -rf node_modules package-lock.json
 npm install
 ```
 
-### Frontend не подключается к Backend
-- Проверьте, что Backend запущен на порту 5000
-- Проверьте `NEXT_PUBLIC_API_URL` в `frontend/.env.local`
-- Убедитесь, что нет CORS ошибок в консоли браузера
+### Frontend not connecting to Backend
 
-## 🛠️ Полезные команды
+- Check that Backend is running on port 5000
+- Check `NEXT_PUBLIC_API_URL` in `frontend/.env.local`
+- Make sure no CORS errors in browser console
+
+## 🛠️ Useful Commands
 
 ```bash
-# Установка всех зависимостей
+# Install all dependencies
 npm run install:all
 
-# Запуск всего проекта
+# Launch entire project
 npm run dev
 
-# Запуск только backend
+# Launch only backend
 npm run dev:backend
 
-# Запуск только frontend
+# Launch only frontend
 npm run dev:frontend
 
-# Создание админ-пользователя
+# Create admin user
 cd backend && npm run create-admin
 ```
 
-## 📚 Дополнительная информация
+## 📚 Additional Information
 
-Подробная документация находится в файле `README.md`
-
-
-
+Detailed documentation is in `README.md`

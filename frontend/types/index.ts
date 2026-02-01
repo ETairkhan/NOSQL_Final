@@ -111,3 +111,45 @@ export interface Review {
   helpfulCount: number
   createdAt: string
 }
+
+export interface StatsOverview {
+  users: number
+  bicycles: number
+  orders: number
+  reviews: number
+  pendingOrders: number
+  lowStockBicycles: number
+}
+
+export interface SalesStats {
+  totalOrders: number
+  totalRevenue: number
+  averageOrderValue: number
+  totalItemsSold: number
+}
+
+export interface TopBicycle {
+  bicycleId: string
+  bicycleName: string
+  totalSold: number
+  totalRevenue: number
+}
+
+export interface TypeStats {
+  typeId: string
+  typeName: string
+  totalSold: number
+  totalRevenue: number
+}
+
+export interface ReviewsStats {
+  totalReviews: number
+  averageRating: number
+  ratingDistribution: {
+    1: number
+    2: number
+    3: number
+    4: number
+    5: number
+  }
+}

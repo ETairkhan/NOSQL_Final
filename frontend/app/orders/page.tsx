@@ -52,11 +52,11 @@ export default function OrdersPage() {
 
   const getStatusText = (status: string) => {
     const statusMap: Record<string, string> = {
-      pending: 'Ожидает',
-      processing: 'Обрабатывается',
-      shipped: 'Отправлен',
-      delivered: 'Доставлен',
-      cancelled: 'Отменен',
+      pending: 'Pending',
+      processing: 'Processing',
+      shipped: 'Shipped',
+      delivered: 'Delivered',
+      cancelled: 'Cancelled',
     }
     return statusMap[status] || status
   }
@@ -65,7 +65,7 @@ export default function OrdersPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-screen">
-          <div className="text-xl">Загрузка...</div>
+          <div className="text-xl">Loading...</div>
         </div>
       </div>
     )
@@ -73,16 +73,16 @@ export default function OrdersPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Мои заказы</h1>
+      <h1 className="text-4xl font-bold text-gray-900 mb-8">My orders</h1>
 
       {orders.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500 text-lg mb-4">У вас пока нет заказов</p>
+          <p className="text-gray-500 text-lg mb-4">You have no orders yet</p>
           <a
             href="/bicycles"
-            className="inline-block px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+            className="inline-block px-6 py-3 bg-primary-600 text-black rounded-lg hover:bg-primary-700"
           >
-            Перейти к велосипедам
+            Go to bicycles
           </a>
         </div>
       ) : (
@@ -92,7 +92,7 @@ export default function OrdersPage() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold">
-                    Заказ #{order._id.slice(-8).toUpperCase()}
+                    Order #{order._id.slice(-8).toUpperCase()}
                   </h3>
                   <p className="text-sm text-gray-500">
                     {new Date(order.orderDate).toLocaleDateString('ru-RU', {
@@ -106,7 +106,7 @@ export default function OrdersPage() {
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-primary-600">
-                    {order.finalAmount.toFixed(2)} ₽
+                    {order.finalAmount.toFixed(2)} $
                   </div>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
                     {getStatusText(order.status)}
@@ -115,16 +115,16 @@ export default function OrdersPage() {
               </div>
 
               <div className="border-t pt-4">
-                <h4 className="font-semibold mb-2">Товары:</h4>
+                <h4 className="font-semibold mb-2">Products:</h4>
                 <div className="space-y-2">
                   {order.items.map((item, index) => {
                     const bicycle = typeof item.bicycle === 'object' ? item.bicycle : null
                     return (
                       <div key={index} className="flex items-center justify-between text-sm">
                         <span>
-                          {bicycle ? bicycle.name : 'Велосипед'} x {item.quantity}
+                          {bicycle ? bicycle.name : 'Bicycle'} x {item.quantity}
                         </span>
-                        <span className="font-medium">{item.subtotal.toFixed(2)} ₽</span>
+                        <span className="font-medium">{item.subtotal.toFixed(2)} $</span>
                       </div>
                     )
                   })}
@@ -133,7 +133,7 @@ export default function OrdersPage() {
 
               {order.shippingAddress && (
                 <div className="border-t pt-4 mt-4">
-                  <h4 className="font-semibold mb-2">Адрес доставки:</h4>
+                  <h4 className="font-semibold mb-2">Delivery address:</h4>
                   <p className="text-sm text-gray-600">
                     {order.shippingAddress.street}, {order.shippingAddress.city}, {order.shippingAddress.zipCode}
                   </p>

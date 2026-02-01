@@ -74,7 +74,7 @@ export default function BicyclesPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-screen">
-          <div className="text-xl">Загрузка...</div>
+          <div className="text-xl">Loading...</div>
         </div>
       </div>
     )
@@ -82,25 +82,25 @@ export default function BicyclesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Все велосипеды</h1>
+      <h1 className="text-4xl font-bold text-gray-900 mb-8">All bicycles</h1>
 
       <div className="flex flex-col md:flex-row gap-8">
         {/* Filters Sidebar */}
         <div className="w-full md:w-64">
           <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Фильтры</h2>
+            <h2 className="text-xl font-semibold mb-4">Filters</h2>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Тип велосипеда
+                  Bicycle type
                 </label>
                 <select
                   value={filters.type}
                   onChange={(e) => handleFilterChange('type', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500"
                 >
-                  <option value="">Все типы</option>
+                  <option value="">All types</option>
                   {types.map((type) => (
                     <option key={type._id} value={type._id}>
                       {type.name}
@@ -111,7 +111,7 @@ export default function BicyclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Цена от
+                  Price from
                 </label>
                 <input
                   type="number"
@@ -124,7 +124,7 @@ export default function BicyclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Цена до
+                  Price to
                 </label>
                 <input
                   type="number"
@@ -137,17 +137,17 @@ export default function BicyclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Сортировка
+                  Sorting
                 </label>
                 <select
                   value={filters.sort}
                   onChange={(e) => handleFilterChange('sort', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500"
                 >
-                  <option value="newest">Сначала новые</option>
-                  <option value="price_asc">Цена: по возрастанию</option>
-                  <option value="price_desc">Цена: по убыванию</option>
-                  <option value="rating_desc">По рейтингу</option>
+                  <option value="newest">Newest first</option>
+                  <option value="price_asc">Price: low to high</option>
+                  <option value="price_desc">Price: high to low</option>
+                  <option value="rating_desc">By rating</option>
                 </select>
               </div>
             </div>
@@ -158,7 +158,7 @@ export default function BicyclesPage() {
         <div className="flex-1">
           {bicycles.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">Велосипеды не найдены</p>
+              <p className="text-gray-500 text-lg">No bicycles found</p>
             </div>
           ) : (
             <>
@@ -178,7 +178,7 @@ export default function BicyclesPage() {
                         />
                       ) : (
                         <div className="w-full h-48 flex items-center justify-center text-gray-400">
-                          Нет изображения
+                          No image
                         </div>
                       )}
                     </div>
@@ -191,15 +191,15 @@ export default function BicyclesPage() {
                           {bicycle.discountPrice && bicycle.discountPrice > 0 ? (
                             <div>
                               <span className="text-2xl font-bold text-primary-600">
-                                {bicycle.discountPrice.toFixed(2)} ₽
+                                {bicycle.discountPrice.toFixed(2)} $
                               </span>
                               <span className="text-sm text-gray-500 line-through ml-2">
-                                {bicycle.price.toFixed(2)} ₽
+                                {bicycle.price.toFixed(2)} $
                               </span>
                             </div>
                           ) : (
                             <span className="text-2xl font-bold text-primary-600">
-                              {bicycle.price.toFixed(2)} ₽
+                              {bicycle.price.toFixed(2)} $
                             </span>
                           )}
                         </div>
@@ -213,7 +213,7 @@ export default function BicyclesPage() {
                         )}
                       </div>
                       {bicycle.stock === 0 && (
-                        <div className="mt-2 text-red-500 text-sm">Нет в наличии</div>
+                        <div className="mt-2 text-red-500 text-sm">Out of stock</div>
                       )}
                     </div>
                   </Link>
@@ -228,17 +228,17 @@ export default function BicyclesPage() {
                     disabled={pagination.page === 1}
                     className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                   >
-                    Назад
+                    Back
                   </button>
                   <span className="px-4 py-2">
-                    Страница {pagination.page} из {pagination.pages}
+                    Page {pagination.page} of {pagination.pages}
                   </span>
                   <button
                     onClick={() => setPagination({ ...pagination, page: pagination.page + 1 })}
                     disabled={pagination.page === pagination.pages}
                     className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                   >
-                    Вперед
+                    Next
                   </button>
                 </div>
               )}

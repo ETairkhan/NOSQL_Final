@@ -52,15 +52,15 @@ const bicycleSchema = new mongoose.Schema({
       type: String // mountain, road, hybrid
     },
     gears: {
-      front: Number, // количество передних звезд
-      rear: Number, // количество задних звезд
-      total: Number // общее количество передач
+      front: Number, // number of front gears
+      rear: Number, // number of rear gears
+      total: Number // total number of gears
     },
     brakes: {
       type: String, // disc, rim, hydraulic
       brand: String
     },
-    weight: String, // вес в кг
+    weight: String, // weight in kg
     color: String,
     suspension: {
       front: Boolean,

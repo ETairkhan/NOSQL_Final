@@ -2,9 +2,12 @@
 
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
+import { useCart } from '@/context/CartContext'
+import { ShoppingCart } from 'lucide-react'
 
 const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth()
+  const { state } = useCart()
 
   const handleLogout = () => {
     logout()
@@ -23,7 +26,7 @@ const Navbar = () => {
                 href="/bicycles"
                 className="text-gray-700 hover:text-primary-600 transition-colors"
               >
-                Велосипеды
+                Bicycles
               </Link>
               {isAuthenticated && (
                 <>
@@ -31,14 +34,14 @@ const Navbar = () => {
                     href="/orders"
                     className="text-gray-700 hover:text-primary-600 transition-colors"
                   >
-                    Заказы
+                    Orders
                   </Link>
                   {user?.role === 'admin' && (
                     <Link
                       href="/admin"
                       className="text-gray-700 hover:text-primary-600 transition-colors"
                     >
-                      Админ-панель
+                      Admin Panel
                     </Link>
                   )}
                 </>
@@ -46,6 +49,19 @@ const Navbar = () => {
             </div>
           </div>
           <div className="flex items-center space-x-4">
+            {isAuthenticated && (
+              <Link
+                href="/cart"
+                className="relative p-2 text-gray-700 hover:text-primary-600 transition-colors"
+              >
+                <ShoppingCart size={24} />
+                {state.items.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {state.items.reduce((sum, item) => sum + item.quantity, 0)}
+                  </span>
+                )}
+              </Link>
+            )}
             {isAuthenticated ? (
               <>
                 <span className="text-gray-700">
@@ -53,9 +69,9 @@ const Navbar = () => {
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                  className="px-4 py-2 bg-red-500 text-black rounded-lg hover:bg-red-600 transition-colors"
                 >
-                  Выйти
+                  Logout
                 </button>
               </>
             ) : (
@@ -64,13 +80,13 @@ const Navbar = () => {
                   href="/login"
                   className="px-4 py-2 text-primary-600 hover:text-primary-700 transition-colors"
                 >
-                  Войти
+                  Login
                 </Link>
                 <Link
                   href="/register"
-                  className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                  className="px-4 py-2 bg-primary-600 text-black rounded-lg hover:bg-primary-700 transition-colors"
                 >
-                  Регистрация
+                  Register
                 </Link>
               </>
             )}

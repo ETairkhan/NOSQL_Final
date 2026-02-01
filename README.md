@@ -1,51 +1,55 @@
 # Bicycle Store - NoSQL Final Project
 
-Полнофункциональный магазин велосипедов, построенный с использованием MongoDB (NoSQL), Node.js/Express для backend и Next.js для frontend.
+Full-featured bicycle store built using MongoDB (NoSQL), Node.js/Express for backend and Next.js for frontend.
 
-## 📋 Описание проекта
+## 📋 Project Description
 
-Это веб-приложение для магазина велосипедов, которое демонстрирует продвинутые возможности работы с MongoDB, включая:
-- Embedded и referenced документы
-- Многоэтапные aggregation pipelines
-- Advanced update/delete операции
-- Compound indexes для оптимизации запросов
-- Аутентификацию и авторизацию
+This is a web application for a bicycle store that demonstrates advanced MongoDB capabilities, including:
 
-## 🏗️ Архитектура системы
+- Embedded and referenced documents
+- Multi-stage aggregation pipelines
+- Advanced update/delete operations
+- Compound indexes for query optimization
+- Authentication and authorization
+
+## 🏗️ System Architecture
 
 ### Backend
-- **Технологии**: Node.js, Express.js, MongoDB (Mongoose)
-- **Архитектура**: RESTful API
-- **База данных**: MongoDB (bicyclestore)
+
+- **Technologies**: Node.js, Express.js, MongoDB (Mongoose)
+- **Architecture**: RESTful API
+- **Database**: MongoDB (bicyclestore)
 
 ### Frontend
-- **Технологии**: Next.js 14, React, TypeScript, TailwindCSS
-- **Архитектура**: Server-side rendering с клиентскими компонентами
-- **Тематика**: Магазин велосипедов
 
-## 📦 Структура проекта
+- **Technologies**: Next.js 14, React, TypeScript, TailwindCSS
+- **Architecture**: Server-side rendering with client components
+- **Theme**: Bicycle store
+
+## 📦 Project Structure
 
 ```
 final2/
 ├── backend/
-│   ├── models/          # Mongoose модели
-│   ├── routes/          # API маршруты
+│   ├── models/          # Mongoose models
+│   ├── routes/          # API routes
 │   ├── middleware/      # Middleware (auth)
-│   └── server.js        # Точка входа
+│   └── server.js        # Entry point
 ├── frontend/
-│   ├── app/             # Next.js страницы
-│   ├── components/      # React компоненты
-│   ├── lib/             # Утилиты (API клиент)
+│   ├── app/             # Next.js pages
+│   ├── components/      # React components
+│   ├── lib/             # Utilities (API client)
 │   ├── context/         # React Context (Auth)
-│   └── types/           # TypeScript типы
+│   └── types/           # TypeScript types
 └── README.md
 ```
 
-## 🗄️ Схема базы данных
+## 🗄️ Database Schema
 
 ### Collections
 
 #### 1. Users
+
 ```javascript
 {
   username: String (unique, required),
@@ -62,14 +66,16 @@ final2/
 ```
 
 **Indexes:**
+
 - `email: 1`
 - `username: 1`
 - `role: 1`
 
 #### 2. BicycleTypes
+
 ```javascript
 {
-  name: String (unique, required), // Горный, Шоссейный, Городской и т.д.
+  name: String (unique, required), // Mountain, Road, City, etc.
   slug: String (unique),
   description: String,
   image: String,
@@ -78,10 +84,12 @@ final2/
 ```
 
 **Indexes:**
+
 - `slug: 1`
 - `isActive: 1`
 
 #### 3. Bicycles
+
 ```javascript
 {
   name: String (required),
@@ -127,12 +135,14 @@ final2/
 ```
 
 **Compound Indexes:**
+
 - `{ type: 1, isActive: 1 }`
 - `{ price: 1, isActive: 1 }`
 - `{ 'ratingSummary.averageRating': -1 }`
 - `{ 'specifications.brand': 1 }`
 
 #### 4. Orders
+
 ```javascript
 {
   user: ObjectId (ref: User),  // Referenced
@@ -152,11 +162,13 @@ final2/
 ```
 
 **Indexes:**
+
 - `{ user: 1, orderDate: -1 }`
 - `{ status: 1, orderDate: -1 }`
 - `{ orderDate: -1 }`
 
 #### 5. Reviews
+
 ```javascript
 {
   user: ObjectId (ref: User),  // Referenced
@@ -171,6 +183,7 @@ final2/
 ```
 
 **Compound Indexes:**
+
 - `{ user: 1, product: 1 }` (unique)
 - `{ product: 1, rating: -1 }`
 - `{ createdAt: -1 }`
@@ -178,229 +191,244 @@ final2/
 ## 🔌 API Endpoints
 
 ### Authentication (`/api/auth`)
-- `POST /api/auth/register` - Регистрация пользователя
-- `POST /api/auth/login` - Вход в систему
-- `GET /api/auth/me` - Получить текущего пользователя
+
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - Login
+- `GET /api/auth/me` - Get current user
 
 ### Bicycles (`/api/bicycles`)
-- `GET /api/bicycles` - Получить все велосипеды (с фильтрацией, пагинацией, сортировкой)
-- `GET /api/bicycles/:id` - Получить велосипед по ID
-- `POST /api/bicycles` - Создать велосипед (Admin only)
-- `PUT /api/bicycles/:id` - Обновить велосипед (Admin only)
-- `PATCH /api/bicycles/:id/stock` - Обновить количество на складе (Advanced: `$inc`)
-- `DELETE /api/bicycles/:id` - Удалить велосипед (Admin only, soft delete)
+
+- `GET /api/bicycles` - Get all bicycles (with filtering, pagination, sorting)
+- `GET /api/bicycles/:id` - Get bicycle by ID
+- `POST /api/bicycles` - Create bicycle (Admin only)
+- `PUT /api/bicycles/:id` - Update bicycle (Admin only)
+- `PATCH /api/bicycles/:id/stock` - Update stock quantity (Advanced: `$inc`)
+- `DELETE /api/bicycles/:id` - Delete bicycle (Admin only, soft delete)
 
 ### BicycleTypes (`/api/types`)
-- `GET /api/types` - Получить все типы велосипедов
-- `GET /api/types/:id` - Получить тип по ID
-- `POST /api/types` - Создать тип (Admin only)
-- `PUT /api/types/:id` - Обновить тип (Admin only)
-- `DELETE /api/types/:id` - Удалить тип (Admin only)
+
+- `GET /api/types` - Get all bicycle types
+- `GET /api/types/:id` - Get type by ID
+- `POST /api/types` - Create type (Admin only)
+- `PUT /api/types/:id` - Update type (Admin only)
+- `DELETE /api/types/:id` - Delete type (Admin only)
 
 ### Orders (`/api/orders`)
-- `GET /api/orders` - Получить заказы (свои или все для admin)
-- `GET /api/orders/:id` - Получить заказ по ID
-- `POST /api/orders` - Создать заказ
-- `PATCH /api/orders/:id/status` - Обновить статус заказа (Advanced: `$set`)
-- `DELETE /api/orders/:id` - Отменить заказ
+
+- `GET /api/orders` - Get orders (own or all for admin)
+- `GET /api/orders/:id` - Get order by ID
+- `POST /api/orders` - Create order
+- `PATCH /api/orders/:id/status` - Update order status (Advanced: `$set`)
+- `DELETE /api/orders/:id` - Cancel order
 
 ### Reviews (`/api/reviews`)
-- `GET /api/reviews` - Получить отзывы (опционально по товару)
-- `GET /api/reviews/:id` - Получить отзыв по ID
-- `POST /api/reviews` - Создать отзыв
-- `PUT /api/reviews/:id` - Обновить отзыв
-- `PATCH /api/reviews/:id/helpful` - Отметить отзыв как полезный (Advanced: `$inc`)
-- `DELETE /api/reviews/:id` - Удалить отзыв
+
+- `GET /api/reviews` - Get reviews (optionally by product)
+- `GET /api/reviews/:id` - Get review by ID
+- `POST /api/reviews` - Create review
+- `PUT /api/reviews/:id` - Update review
+- `PATCH /api/reviews/:id/helpful` - Mark review as helpful (Advanced: `$inc`)
+- `DELETE /api/reviews/:id` - Delete review
 
 ### Statistics (`/api/stats`) - Aggregation Endpoints
-- `GET /api/stats/sales` - Статистика продаж (Admin only)
-- `GET /api/stats/bicycles` - Топ продаваемых велосипедов (Admin only)
-- `GET /api/stats/types` - Статистика по типам велосипедов (Admin only)
-- `GET /api/stats/reviews` - Статистика отзывов
-- `GET /api/stats/overview` - Общая статистика (Admin only)
 
-**Всего: 23+ endpoints**
+- `GET /api/stats/sales` - Sales statistics (Admin only)
+- `GET /api/stats/bicycles` - Top selling bicycles (Admin only)
+- `GET /api/stats/types` - Statistics by bicycle types (Admin only)
+- `GET /api/stats/reviews` - Review statistics
+- `GET /api/stats/overview` - General statistics (Admin only)
+
+**Total: 23+ endpoints**
 
 ## 🔍 MongoDB Queries Examples
 
 ### 1. Advanced Update Operations
 
 #### Update Stock with $inc
+
 ```javascript
 // PATCH /api/bicycles/:id/stock
 Bicycle.findByIdAndUpdate(
   bicycleId,
   { $inc: { stock: quantity } },
-  { new: true }
-)
+  { new: true },
+);
 ```
 
 #### Update Order Status with $set
+
 ```javascript
 // PATCH /api/orders/:id/status
 Order.findByIdAndUpdate(
   orderId,
   { $set: { status: newStatus, deliveredDate: new Date() } },
-  { new: true }
-)
+  { new: true },
+);
 ```
 
 #### Increment Helpful Count with $inc
+
 ```javascript
 // PATCH /api/reviews/:id/helpful
 Review.findByIdAndUpdate(
   reviewId,
   { $inc: { helpfulCount: 1 } },
-  { new: true }
-)
+  { new: true },
+);
 ```
 
 ### 2. Aggregation Pipelines
 
 #### Sales Statistics
+
 ```javascript
 Order.aggregate([
-  { $match: { status: { $ne: 'cancelled' } } },
+  { $match: { status: { $ne: "cancelled" } } },
   {
     $group: {
       _id: null,
       totalOrders: { $sum: 1 },
-      totalRevenue: { $sum: '$finalAmount' },
-      averageOrderValue: { $avg: '$finalAmount' },
+      totalRevenue: { $sum: "$finalAmount" },
+      averageOrderValue: { $avg: "$finalAmount" },
       totalItemsSold: {
         $sum: {
           $reduce: {
-            input: '$items',
+            input: "$items",
             initialValue: 0,
-            in: { $add: ['$$value', '$$this.quantity'] }
-          }
-        }
-      }
-    }
-  }
-])
+            in: { $add: ["$$value", "$$this.quantity"] },
+          },
+        },
+      },
+    },
+  },
+]);
 ```
 
 #### Top Selling Bicycles
+
 ```javascript
 Order.aggregate([
-  { $match: { status: { $ne: 'cancelled' } } },
-  { $unwind: '$items' },
+  { $match: { status: { $ne: "cancelled" } } },
+  { $unwind: "$items" },
   {
     $group: {
-      _id: '$items.bicycle',
-      totalSold: { $sum: '$items.quantity' },
-      totalRevenue: { $sum: '$items.subtotal' }
-    }
+      _id: "$items.bicycle",
+      totalSold: { $sum: "$items.quantity" },
+      totalRevenue: { $sum: "$items.subtotal" },
+    },
   },
   { $sort: { totalSold: -1 } },
   { $limit: 10 },
   {
     $lookup: {
-      from: 'bicycles',
-      localField: '_id',
-      foreignField: '_id',
-      as: 'bicycle'
-    }
+      from: "bicycles",
+      localField: "_id",
+      foreignField: "_id",
+      as: "bicycle",
+    },
   },
-  { $unwind: '$bicycle' }
-])
+  { $unwind: "$bicycle" },
+]);
 ```
 
 #### Sales by Bicycle Type
+
 ```javascript
 Order.aggregate([
-  { $match: { status: { $ne: 'cancelled' } } },
-  { $unwind: '$items' },
+  { $match: { status: { $ne: "cancelled" } } },
+  { $unwind: "$items" },
   {
     $lookup: {
-      from: 'bicycles',
-      localField: 'items.bicycle',
-      foreignField: '_id',
-      as: 'bicycle'
-    }
+      from: "bicycles",
+      localField: "items.bicycle",
+      foreignField: "_id",
+      as: "bicycle",
+    },
   },
-  { $unwind: '$bicycle' },
+  { $unwind: "$bicycle" },
   {
     $lookup: {
-      from: 'bicycletypes',
-      localField: 'bicycle.type',
-      foreignField: '_id',
-      as: 'type'
-    }
+      from: "bicycletypes",
+      localField: "bicycle.type",
+      foreignField: "_id",
+      as: "type",
+    },
   },
-  { $unwind: '$type' },
+  { $unwind: "$type" },
   {
     $group: {
-      _id: '$type._id',
-      typeName: { $first: '$type.name' },
-      totalSold: { $sum: '$items.quantity' },
-      totalRevenue: { $sum: '$items.subtotal' }
-    }
+      _id: "$type._id",
+      typeName: { $first: "$type.name" },
+      totalSold: { $sum: "$items.quantity" },
+      totalRevenue: { $sum: "$items.subtotal" },
+    },
   },
-  { $sort: { totalRevenue: -1 } }
-])
+  { $sort: { totalRevenue: -1 } },
+]);
 ```
 
 #### Update Bicycle Rating Summary
+
 ```javascript
 Review.aggregate([
   { $match: { bicycle: bicycleId } },
   {
     $group: {
       _id: null,
-      averageRating: { $avg: '$rating' },
-      totalReviews: { $sum: 1 }
-    }
-  }
-])
+      averageRating: { $avg: "$rating" },
+      totalReviews: { $sum: 1 },
+    },
+  },
+]);
 ```
 
 ### 3. Advanced Delete Operations
 
 #### Soft Delete Bicycle
+
 ```javascript
 Bicycle.findByIdAndUpdate(
   bicycleId,
   { $set: { isActive: false } },
-  { new: true }
-)
+  { new: true },
+);
 ```
 
 #### Cancel Order with Stock Restoration
+
 ```javascript
 // Restore stock for each item
 for (const item of order.items) {
-  await Bicycle.findByIdAndUpdate(
-    item.bicycle,
-    { $inc: { stock: item.quantity } }
-  )
+  await Bicycle.findByIdAndUpdate(item.bicycle, {
+    $inc: { stock: item.quantity },
+  });
 }
-order.status = 'cancelled'
-await order.save()
+order.status = "cancelled";
+await order.save();
 ```
 
 ## 🔐 Authentication & Authorization
 
-- **JWT-based authentication**: Токены хранятся в cookies
-- **Role-based access control**: `customer` и `admin` роли
-- **Protected routes**: Middleware `authenticate` и `authorize`
+- **JWT-based authentication**: Tokens stored in cookies
+- **Role-based access control**: `customer` and `admin` roles
+- **Protected routes**: `authenticate` and `authorize` middleware
 
 ## 📱 Frontend Pages
 
-1. **Home** (`/`) - Главная страница с популярными велосипедами
-2. **Bicycles** (`/bicycles`) - Каталог велосипедов с фильтрацией
-3. **Bicycle Detail** (`/bicycles/:id`) - Детальная страница велосипеда с отзывами
-4. **Login** (`/login`) - Страница входа
-5. **Register** (`/register`) - Страница регистрации
-6. **Orders** (`/orders`) - Страница заказов пользователя
-7. **Admin Panel** (`/admin`) - Админ-панель со статистикой
+1. **Home** (`/`) - Home page with popular bicycles
+2. **Bicycles** (`/bicycles`) - Bicycle catalog with filtering
+3. **Bicycle Detail** (`/bicycles/:id`) - Bicycle detail page with reviews
+4. **Login** (`/login`) - Login page
+5. **Register** (`/register`) - Registration page
+6. **Orders** (`/orders`) - User orders page
+7. **Admin Panel** (`/admin`) - Admin panel with statistics
 
-## 🚀 Установка и запуск
+## 🚀 Installation and Launch
 
-### Требования
+### Requirements
+
 - Node.js 18+
-- MongoDB (локально или MongoDB Atlas)
+- MongoDB (local or MongoDB Atlas)
 
 ### Backend
 
@@ -408,7 +436,7 @@ await order.save()
 cd backend
 npm install
 cp .env.example .env
-# Отредактируйте .env файл
+# Edit .env file
 npm run dev
 ```
 
@@ -417,90 +445,90 @@ npm run dev
 ```bash
 cd frontend
 npm install
-# Создайте .env.local с NEXT_PUBLIC_API_URL=http://localhost:5000/api
+# Create .env.local with NEXT_PUBLIC_API_URL=http://localhost:5000/api
 npm run dev
 ```
 
-### Запуск всего проекта
+### Launch entire project
 
 ```bash
-# В корневой директории
+# In root directory
 npm install
 npm run install:all
 npm run dev
 ```
 
-### Создание админ-пользователя
+### Create admin user
 
-После запуска backend, создайте админ-пользователя для доступа к админ-панели:
+After launching backend, create admin user for admin panel access:
 
 ```bash
 cd backend
 npm run create-admin
 ```
 
-Будут созданы учетные данные:
+Credentials will be created:
+
 - Email: `admin@example.com`
 - Password: `admin123`
 
-**Важно**: Измените пароль после первого входа!
+**Important**: Change password after first login!
 
-## 📊 Индексы и оптимизация
+## 📊 Indexes and Optimization
 
 ### Compound Indexes
 
-1. **Products**: `{ category: 1, isActive: 1 }` - для фильтрации по категориям
-2. **Products**: `{ price: 1, isActive: 1 }` - для сортировки по цене
-3. **Orders**: `{ user: 1, orderDate: -1 }` - для получения заказов пользователя
-4. **Orders**: `{ status: 1, orderDate: -1 }` - для фильтрации по статусу
-5. **Reviews**: `{ user: 1, product: 1 }` - уникальность отзыва на товар
+1. **Products**: `{ category: 1, isActive: 1 }` - for category filtering
+2. **Products**: `{ price: 1, isActive: 1 }` - for price sorting
+3. **Orders**: `{ user: 1, orderDate: -1 }` - for getting user orders
+4. **Orders**: `{ status: 1, orderDate: -1 }` - for status filtering
+5. **Reviews**: `{ user: 1, product: 1 }` - review uniqueness per product
 
-### Оптимизация запросов
+### Query Optimization
 
-- Использование `populate()` для referenced документов
-- Пагинация для больших списков
-- Индексы на часто используемых полях
-- Aggregation pipelines для сложных запросов
+- Using `populate()` for referenced documents
+- Pagination for large lists
+- Indexes on frequently used fields
+- Aggregation pipelines for complex queries
 
-## 🎯 Особенности реализации
+## 🎯 Implementation Features
 
 ### Embedded vs Referenced Documents
 
-- **Embedded**: `specifications` (frame, wheels, gears, brakes, suspension), `ratingSummary` в Bicycle, `items` в Order, `address` в User
-- **Referenced**: `type` в Bicycle, `user` в Order/Review, `bicycle` в Order/Review
+- **Embedded**: `specifications` (frame, wheels, gears, brakes, suspension), `ratingSummary` in Bicycle, `items` in Order, `address` in User
+- **Referenced**: `type` in Bicycle, `user` in Order/Review, `bicycle` in Order/Review
 
 ### Advanced MongoDB Operations
 
-- `$set` - для обновления полей
-- `$inc` - для инкремента числовых значений
-- `$push` / `$pull` - для работы с массивами (готово к использованию)
-- Positional operators - для обновления элементов массивов
+- `$set` - for field updates
+- `$inc` - for incrementing numeric values
+- `$push` / `$pull` - for array operations (ready for use)
+- Positional operators - for updating array elements
 
 ### Business Logic
 
-- Автоматическое обновление рейтинга велосипеда при добавлении отзыва
-- Восстановление велосипеда на складе при отмене заказа
-- Проверка наличия велосипеда при создании заказа
-- Верификация отзывов для пользователей, сделавших заказ
-- Детальные спецификации велосипедов (рама, колеса, передачи, тормоза, подвеска)
+- Automatic bicycle rating update when adding review
+- Bicycle stock restoration when canceling order
+- Bicycle availability check when creating order
+- Review verification for users who made orders
+- Detailed bicycle specifications (frame, wheels, gears, brakes, suspension)
 
-## 📝 Дополнительные функции
+## 📝 Additional Features
 
-- ✅ Пагинация и фильтрация
-- ✅ Сортировка товаров
-- ✅ Поиск по категориям
-- ✅ Система отзывов с рейтингами
-- ✅ Админ-панель со статистикой
-- ✅ Централизованная обработка ошибок
-- ✅ Валидация данных (express-validator)
+- ✅ Pagination and filtering
+- ✅ Product sorting
+- ✅ Search by categories
+- ✅ Review system with ratings
+- ✅ Admin panel with statistics
+- ✅ Centralized error handling
+- ✅ Data validation (express-validator)
 - ✅ Environment configuration (.env)
 
-## 👥 Вклад студентов
+## 👥 Student Contributors
 
 Yermek Tairkhan,
 Abilkaiyr Uzbekbay
 
-## 📄 Лицензия
+## 📄 License
 
 MIT
-

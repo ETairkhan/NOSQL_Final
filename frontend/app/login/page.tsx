@@ -33,7 +33,7 @@ export default function LoginPage() {
       await login(formData.email, formData.password)
       router.push('/')
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Ошибка входа')
+      setError(err.response?.data?.message || 'Login error')
     } finally {
       setLoading(false)
     }
@@ -44,12 +44,12 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Вход в аккаунт
+            Login to account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Или{' '}
+            Or{' '}
             <Link href="/register" className="font-medium text-primary-600 hover:text-primary-500">
-              зарегистрируйтесь
+              register
             </Link>
           </p>
         </div>
@@ -71,14 +71,14 @@ export default function LoginPage() {
                 autoComplete="email"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                placeholder="Email адрес"
+                placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
               />
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
-                Пароль
+                Password
               </label>
               <input
                 id="password"
@@ -87,7 +87,7 @@ export default function LoginPage() {
                 autoComplete="current-password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                placeholder="Пароль"
+                placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
               />
@@ -98,9 +98,9 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-black bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
             >
-              {loading ? 'Вход...' : 'Войти'}
+              {loading ? 'Login...' : 'Login'}
             </button>
           </div>
         </form>

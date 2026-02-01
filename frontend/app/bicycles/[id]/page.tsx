@@ -53,7 +53,7 @@ export default function BicycleDetailPage() {
       router.push('/login')
       return
     }
-    alert('Велосипед добавлен в корзину')
+    alert('Bicycle added to cart')
   }
 
   const handleSubmitReview = async (e: React.FormEvent) => {
@@ -73,7 +73,7 @@ export default function BicycleDetailPage() {
       fetchReviews()
       fetchBicycle() // Refresh to update rating
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Ошибка при добавлении отзыва')
+      alert(error.response?.data?.message || 'Error adding review')
     }
   }
 
@@ -81,7 +81,7 @@ export default function BicycleDetailPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-screen">
-          <div className="text-xl">Загрузка...</div>
+          <div className="text-xl">Loading...</div>
         </div>
       </div>
     )
@@ -91,12 +91,12 @@ export default function BicycleDetailPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Велосипед не найден</h1>
+          <h1 className="text-2xl font-bold mb-4">Bicycle not found</h1>
           <button
             onClick={() => router.push('/bicycles')}
-            className="px-4 py-2 bg-primary-600 text-white rounded-lg"
+            className="px-4 py-2 bg-primary-600 text-black rounded-lg"
           >
-            Вернуться к велосипедам
+            Back to bicycles
           </button>
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function BicycleDetailPage() {
             />
           ) : (
             <div className="w-full h-96 bg-gray-200 rounded-lg flex items-center justify-center">
-              <span className="text-gray-400">Нет изображения</span>
+              <span className="text-gray-400">No image</span>
             </div>
           )}
         </div>
@@ -134,7 +134,7 @@ export default function BicycleDetailPage() {
             <div className="flex items-center mb-4">
               <span className="text-yellow-500 text-2xl">★</span>
               <span className="ml-2 text-lg">
-                {bicycle.ratingSummary.averageRating.toFixed(1)} ({bicycle.ratingSummary.totalReviews} отзывов)
+                {bicycle.ratingSummary.averageRating.toFixed(1)} ({bicycle.ratingSummary.totalReviews} reviews)
               </span>
             </div>
           )}
@@ -143,15 +143,15 @@ export default function BicycleDetailPage() {
             {bicycle.discountPrice && bicycle.discountPrice > 0 ? (
               <div>
                 <span className="text-4xl font-bold text-primary-600">
-                  {bicycle.discountPrice.toFixed(2)} ₽
+                  {bicycle.discountPrice.toFixed(2)} $
                 </span>
                 <span className="text-xl text-gray-500 line-through ml-3">
-                  {bicycle.price.toFixed(2)} ₽
+                  {bicycle.price.toFixed(2)} $
                 </span>
               </div>
             ) : (
               <span className="text-4xl font-bold text-primary-600">
-                {bicycle.price.toFixed(2)} ₽
+                {bicycle.price.toFixed(2)} $
               </span>
             )}
           </div>
@@ -160,41 +160,41 @@ export default function BicycleDetailPage() {
 
           {bicycle.specifications && (
             <div className="mb-6">
-              <h3 className="font-semibold mb-2">Характеристики:</h3>
+              <h3 className="font-semibold mb-2">Specifications:</h3>
               <ul className="space-y-1 text-sm">
                 {bicycle.specifications.brand && (
-                  <li>Бренд: {bicycle.specifications.brand}</li>
+                  <li>Brand: {bicycle.specifications.brand}</li>
                 )}
                 {bicycle.specifications.frame?.material && (
-                  <li>Материал рамы: {bicycle.specifications.frame.material}</li>
+                  <li>Frame material: {bicycle.specifications.frame.material}</li>
                 )}
                 {bicycle.specifications.frame?.size && (
-                  <li>Размер рамы: {bicycle.specifications.frame.size}</li>
+                  <li>Frame size: {bicycle.specifications.frame.size}</li>
                 )}
                 {bicycle.specifications.wheels?.size && (
-                  <li>Размер колес: {bicycle.specifications.wheels.size}</li>
+                  <li>Wheel size: {bicycle.specifications.wheels.size}</li>
                 )}
                 {bicycle.specifications.gears && (
                   <li>
-                    Передачи: {bicycle.specifications.gears.front || 0}x{bicycle.specifications.gears.rear || 0} 
-                    ({bicycle.specifications.gears.total || 0} скоростей)
+                    Gears: {bicycle.specifications.gears.front || 0}x{bicycle.specifications.gears.rear || 0} 
+                    ({bicycle.specifications.gears.total || 0} speeds)
                   </li>
                 )}
                 {bicycle.specifications.brakes?.type && (
-                  <li>Тормоза: {bicycle.specifications.brakes.type}</li>
+                  <li>Brakes: {bicycle.specifications.brakes.type}</li>
                 )}
                 {bicycle.specifications.weight && (
-                  <li>Вес: {bicycle.specifications.weight}</li>
+                  <li>Weight: {bicycle.specifications.weight}</li>
                 )}
                 {bicycle.specifications.color && (
-                  <li>Цвет: {bicycle.specifications.color}</li>
+                  <li>Color: {bicycle.specifications.color}</li>
                 )}
                 {bicycle.specifications.suspension && (
                   <li>
-                    Подвеска: {
-                      bicycle.specifications.suspension.type === 'hardtail' ? 'Хардтейл' :
-                      bicycle.specifications.suspension.type === 'full-suspension' ? 'Полноподвес' :
-                      'Ригид'
+                    Suspension: {
+                      bicycle.specifications.suspension.type === 'hardtail' ? 'Hardtail' :
+                      bicycle.specifications.suspension.type === 'full-suspension' ? 'Full suspension' :
+                      'Rigid'
                     }
                   </li>
                 )}
@@ -204,7 +204,7 @@ export default function BicycleDetailPage() {
 
           <div className="mb-6">
             <div className="flex items-center gap-4 mb-4">
-              <label className="font-medium">Количество:</label>
+              <label className="font-medium">Quantity:</label>
               <input
                 type="number"
                 min="1"
@@ -214,7 +214,7 @@ export default function BicycleDetailPage() {
                 className="w-20 px-3 py-2 border border-gray-300 rounded-md"
               />
               <span className="text-gray-600">
-                В наличии: {bicycle.stock} шт.
+                In stock: {bicycle.stock} pcs.
               </span>
             </div>
           </div>
@@ -222,9 +222,9 @@ export default function BicycleDetailPage() {
           <button
             onClick={handleAddToCart}
             disabled={bicycle.stock === 0}
-            className="w-full py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            className="w-full py-3 bg-primary-600 text-black rounded-lg hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
           >
-            {bicycle.stock === 0 ? 'Нет в наличии' : 'Добавить в корзину'}
+            {bicycle.stock === 0 ? 'Out of stock' : 'Add to cart'}
           </button>
         </div>
       </div>
@@ -232,13 +232,13 @@ export default function BicycleDetailPage() {
       {/* Reviews Section */}
       <div className="mt-12">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Отзывы</h2>
+          <h2 className="text-2xl font-bold">Reviews</h2>
           {isAuthenticated && (
             <button
               onClick={() => setShowReviewForm(!showReviewForm)}
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+              className="px-4 py-2 bg-primary-600 text-black rounded-lg hover:bg-primary-700"
             >
-              {showReviewForm ? 'Отменить' : 'Написать отзыв'}
+              {showReviewForm ? 'Cancel' : 'Write review'}
             </button>
           )}
         </div>
@@ -246,7 +246,7 @@ export default function BicycleDetailPage() {
         {showReviewForm && (
           <form onSubmit={handleSubmitReview} className="bg-white p-6 rounded-lg shadow-md mb-6">
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Рейтинг</label>
+              <label className="block text-sm font-medium mb-2">Rating</label>
               <select
                 value={reviewForm.rating}
                 onChange={(e) => setReviewForm({ ...reviewForm, rating: parseInt(e.target.value) })}
@@ -254,43 +254,43 @@ export default function BicycleDetailPage() {
               >
                 {[5, 4, 3, 2, 1].map((r) => (
                   <option key={r} value={r}>
-                    {r} звезд{r > 1 ? 'ы' : 'а'}
+                    {r} star{r > 1 ? 's' : ''}
                   </option>
                 ))}
               </select>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Заголовок</label>
+              <label className="block text-sm font-medium mb-2">Title</label>
               <input
                 type="text"
                 value={reviewForm.title}
                 onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="Заголовок отзыва"
+                placeholder="Review title"
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Комментарий</label>
+              <label className="block text-sm font-medium mb-2">Comment</label>
               <textarea
                 value={reviewForm.comment}
                 onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 rows={4}
-                placeholder="Ваш отзыв"
+                placeholder="Your review"
               />
             </div>
             <button
               type="submit"
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+              className="px-4 py-2 bg-primary-600 text-black rounded-lg hover:bg-primary-700"
             >
-              Отправить отзыв
+              Submit review
             </button>
           </form>
         )}
 
         <div className="space-y-4">
           {reviews.length === 0 ? (
-            <p className="text-gray-500">Пока нет отзывов</p>
+            <p className="text-gray-500">No reviews yet</p>
           ) : (
             reviews.map((review) => (
               <div key={review._id} className="bg-white p-6 rounded-lg shadow-md">
@@ -298,11 +298,11 @@ export default function BicycleDetailPage() {
                   <div className="flex items-center">
                     <span className="text-yellow-500">★</span>
                     <span className="ml-2 font-semibold">
-                      {typeof review.user === 'object' ? review.user.username : 'Пользователь'}
+                      {typeof review.user === 'object' ? review.user.username : 'User'}
                     </span>
                     {review.isVerified && (
                       <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                        Проверенная покупка
+                        Verified purchase
                       </span>
                     )}
                   </div>

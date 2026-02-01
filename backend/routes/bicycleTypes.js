@@ -44,25 +44,54 @@ router.post('/', authenticate, authorize('admin'), [
   body('name').trim().notEmpty().withMessage('Bicycle type name is required')
 ], async (req, res) => {
   try {
+    console.log('POST /api/types - Request body:', req.body); // Add log
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, description, image } = req.body;
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const { name, description, image, isActive = true } = req.body;
+    
+    // Generate slug more reliably
+    let slug = name.toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '') // Remove special characters
+      .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with dashes
+      .replace(/^-+|-+$/g, ''); // Remove dashes at the beginning and end
+    
+    console.log('Generated slug from name:', slug); // Add log
+    
+    // Check slug uniqueness
+    const existingType = await BicycleType.findOne({ slug });
+    if (existingType) {
+      // Add timestamp if slug already exists
+      slug = `${slug}-${Date.now().toString().slice(-6)}`;
+      console.log('Slug already exists, new slug:', slug); // Add log
+    }
+
+    console.log('Creating type with data:', { // Add log
+      name,
+      slug,
+      description: description || '',
+      image: image || '',
+      isActive: isActive !== undefined ? isActive : true
+    });
 
     const type = new BicycleType({
       name,
       slug,
-      description,
-      image
+      description: description || '',
+      image: image || '',
+      isActive: isActive !== undefined ? isActive : true
     });
 
     await type.save();
+    console.log('Type saved successfully:', type); // Add log
     res.status(201).json(type);
   } catch (error) {
     console.error('Create bicycle type error:', error);
+    console.error('Error details:', error.message); // Add log
     if (error.code === 11000) {
       return res.status(400).json({ message: 'Bicycle type with this name already exists' });
     }
@@ -75,10 +104,25 @@ router.post('/', authenticate, authorize('admin'), [
 // @access  Private (Admin only)
 router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
   try {
-    const updateData = req.body;
+    const updateData = { ...req.body };
     
+    // If we change the name, update the slug
     if (updateData.name) {
-      updateData.slug = updateData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      updateData.slug = updateData.name.toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      
+      // Check slug uniqueness for other documents
+      const existingType = await BicycleType.findOne({
+        slug: updateData.slug,
+        _id: { $ne: req.params.id }
+      });
+      
+      if (existingType) {
+        updateData.slug = `${updateData.slug}-${Date.now().toString().slice(-6)}`;
+      }
     }
 
     const type = await BicycleType.findByIdAndUpdate(
@@ -96,6 +140,9 @@ router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
     console.error('Update bicycle type error:', error);
     if (error.name === 'CastError') {
       return res.status(400).json({ message: 'Invalid bicycle type ID' });
+    }
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'Slug already exists' });
     }
     res.status(500).json({ message: 'Server error' });
   }

@@ -47,7 +47,7 @@ export default function Home() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl">Загрузка...</div>
+        <div className="text-xl">Loading...</div>
       </div>
     )
   }
@@ -56,26 +56,26 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Добро пожаловать в наш магазин велосипедов
+          Welcome to our bicycle store
         </h1>
         <p className="text-gray-600 text-lg">
-          Откройте для себя лучшие велосипеды для любого стиля езды
+          Discover the best bicycles for any riding style
         </p>
       </div>
 
       {/* Types Filter */}
       <div className="mb-8">
-        <h2 className="text-black text-2xl font-semibold mb-4">Типы велосипедов</h2>
+        <h2 className="text-black text-2xl font-semibold mb-4">Bicycle types</h2>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setSelectedType('')}
             className={`px-4 py-2 rounded-lg transition-colors ${
               selectedType === ''
-                ? 'bg-primary-600 text-white'
+                ? 'bg-primary-600 text-black'
                 : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
           >
-            Все велосипеды
+            All bicycles
           </button>
           {types.map((type) => (
             <button
@@ -83,7 +83,7 @@ export default function Home() {
               onClick={() => setSelectedType(type._id)}
               className={`px-4 py-2 rounded-lg transition-colors ${
                 selectedType === type._id
-                  ? 'bg-primary-600 text-white'
+                  ? 'bg-primary-600 text-black'
                   : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
             >
@@ -95,7 +95,7 @@ export default function Home() {
 
       {/* Bicycles Grid */}
       <div className="mb-8">
-        <h2 className="text-black text-2xl font-semibold mb-4">Популярные велосипеды</h2>
+        <h2 className="text-black text-2xl font-semibold mb-4">Popular bicycles</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {bicycles.map((bicycle) => (
             <Link
@@ -112,7 +112,7 @@ export default function Home() {
                   />
                 ) : (
                   <div className="w-full h-48 flex items-center justify-center text-gray-400">
-                    Нет изображения
+                    No image
                   </div>
                 )}
               </div>
@@ -122,18 +122,18 @@ export default function Home() {
                 </h3>
                 <div className="flex items-center justify-between">
                   <div>
-                    {bicycle.discountPrice > 0 ? (
+                    {bicycle.discountPrice !== undefined && bicycle.discountPrice > 0 ?  (
                       <div>
                         <span className="text-2xl font-bold text-primary-600">
-                          {bicycle.discountPrice.toFixed(2)} ₽
+                          {bicycle.discountPrice.toFixed(2)} $
                         </span>
                         <span className="text-sm text-gray-500 line-through ml-2">
-                          {bicycle.price.toFixed(2)} ₽
+                          {bicycle.price.toFixed(2)} $
                         </span>
                       </div>
                     ) : (
                       <span className="text-2xl font-bold text-primary-600">
-                        {bicycle.price.toFixed(2)} ₽
+                        {bicycle.price.toFixed(2)} $
                       </span>
                     )}
                   </div>
@@ -147,7 +147,7 @@ export default function Home() {
                   )}
                 </div>
                 {bicycle.stock === 0 && (
-                  <div className="mt-2 text-red-500 text-sm">Нет в наличии</div>
+                  <div className="mt-2 text-red-500 text-sm">Out of stock</div>
                 )}
               </div>
             </Link>
@@ -158,9 +158,9 @@ export default function Home() {
       <div className="text-center">
         <Link
           href="/bicycles"
-          className="inline-block px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+          className="inline-block px-6 py-3 bg-primary-600 text-black rounded-lg hover:bg-primary-700 transition-colors"
         >
-          Посмотреть все велосипеды
+          View all bicycles
         </Link>
       </div>
     </div>
