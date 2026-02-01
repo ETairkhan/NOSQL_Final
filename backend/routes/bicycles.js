@@ -9,13 +9,22 @@ const router = express.Router();
 // @route   GET /api/bicycles
 // @desc    Get all bicycles with filtering and pagination
 // @access  Public
+const allowedSortFields = [
+  'price',
+  '-price',
+  'createdAt',
+  '-createdAt',
+  'ratingSummary.averageRating',
+  '-ratingSummary.averageRating'
+];
 router.get('/', [
   query('page').optional().isInt({ min: 1 }),
   query('limit').optional().isInt({ min: 1, max: 100 }),
   query('type').optional().isMongoId(),
   query('minPrice').optional().isFloat({ min: 0 }),
   query('maxPrice').optional().isFloat({ min: 0 }),
-  query('sort').optional().isIn(['price_asc', 'price_desc', 'rating_desc', 'newest'])
+
+  query('sort').optional().isIn(allowedSortFields)
 ], async (req, res) => {
   try {
     const errors = validationResult(req);

@@ -32,7 +32,7 @@ export default function Home() {
   useEffect(() => {
     const fetchBicycles = async () => {
       try {
-        const url = selectedType 
+        const url = selectedType
           ? `/bicycles?type=${selectedType}&limit=8`
           : '/bicycles?limit=8'
         const res = await api.get(url)
@@ -65,7 +65,7 @@ export default function Home() {
 
       {/* Types Filter */}
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Типы велосипедов</h2>
+        <h2 className="text-black text-2xl font-semibold mb-4">Типы велосипедов</h2>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setSelectedType('')}
@@ -95,7 +95,7 @@ export default function Home() {
 
       {/* Bicycles Grid */}
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Популярные велосипеды</h2>
+        <h2 className="text-black text-2xl font-semibold mb-4">Популярные велосипеды</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {bicycles.map((bicycle) => (
             <Link
