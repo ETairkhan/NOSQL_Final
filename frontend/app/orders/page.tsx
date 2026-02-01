@@ -79,10 +79,10 @@ export default function OrdersPage() {
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg mb-4">У вас пока нет заказов</p>
           <a
-            href="/products"
+            href="/bicycles"
             className="inline-block px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
           >
-            Перейти к товарам
+            Перейти к велосипедам
           </a>
         </div>
       ) : (
@@ -118,11 +118,11 @@ export default function OrdersPage() {
                 <h4 className="font-semibold mb-2">Товары:</h4>
                 <div className="space-y-2">
                   {order.items.map((item, index) => {
-                    const product = typeof item.product === 'object' ? item.product : null
+                    const bicycle = typeof item.bicycle === 'object' ? item.bicycle : null
                     return (
                       <div key={index} className="flex items-center justify-between text-sm">
                         <span>
-                          {product ? product.name : 'Товар'} x {item.quantity}
+                          {bicycle ? bicycle.name : 'Велосипед'} x {item.quantity}
                         </span>
                         <span className="font-medium">{item.subtotal.toFixed(2)} ₽</span>
                       </div>

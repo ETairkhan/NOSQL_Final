@@ -23,17 +23,17 @@ export default function AdminPage() {
 
   const fetchStats = async () => {
     try {
-      const [overview, sales, products, categories] = await Promise.all([
+      const [overview, sales, bicycles, types] = await Promise.all([
         api.get('/stats/overview'),
         api.get('/stats/sales'),
-        api.get('/stats/products?limit=5'),
-        api.get('/stats/categories'),
+        api.get('/stats/bicycles?limit=5'),
+        api.get('/stats/types'),
       ])
       setStats({
         overview: overview.data,
         sales: sales.data,
-        topProducts: products.data,
-        categoryStats: categories.data,
+        topBicycles: bicycles.data,
+        typeStats: types.data,
       })
     } catch (error) {
       console.error('Error fetching stats:', error)
@@ -67,8 +67,8 @@ export default function AdminPage() {
           <p className="text-3xl font-bold text-primary-600">{stats.overview.users}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-600 mb-2">Товаров</h3>
-          <p className="text-3xl font-bold text-primary-600">{stats.overview.products}</p>
+          <h3 className="text-lg font-semibold text-gray-600 mb-2">Велосипедов</h3>
+          <p className="text-3xl font-bold text-primary-600">{stats.overview.bicycles}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold text-gray-600 mb-2">Заказов</h3>
@@ -83,8 +83,8 @@ export default function AdminPage() {
           <p className="text-3xl font-bold text-yellow-600">{stats.overview.pendingOrders}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-600 mb-2">Товаров с низким запасом</h3>
-          <p className="text-3xl font-bold text-red-600">{stats.overview.lowStockProducts}</p>
+          <h3 className="text-lg font-semibold text-gray-600 mb-2">Велосипедов с низким запасом</h3>
+          <p className="text-3xl font-bold text-red-600">{stats.overview.lowStockBicycles}</p>
         </div>
       </div>
 
@@ -115,25 +115,25 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* Top Products */}
+      {/* Top Bicycles */}
       <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h2 className="text-2xl font-bold mb-4">Топ продаваемых товаров</h2>
-        {stats.topProducts && stats.topProducts.length > 0 ? (
+        <h2 className="text-2xl font-bold mb-4">Топ продаваемых велосипедов</h2>
+        {stats.topBicycles && stats.topBicycles.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-2">Товар</th>
+                  <th className="text-left py-2">Велосипед</th>
                   <th className="text-right py-2">Продано</th>
                   <th className="text-right py-2">Выручка</th>
                 </tr>
               </thead>
               <tbody>
-                {stats.topProducts.map((product: any) => (
-                  <tr key={product.productId} className="border-b">
-                    <td className="py-2">{product.productName}</td>
-                    <td className="text-right py-2">{product.totalSold}</td>
-                    <td className="text-right py-2">{product.totalRevenue.toFixed(2)} ₽</td>
+                {stats.topBicycles.map((bicycle: any) => (
+                  <tr key={bicycle.bicycleId} className="border-b">
+                    <td className="py-2">{bicycle.bicycleName}</td>
+                    <td className="text-right py-2">{bicycle.totalSold}</td>
+                    <td className="text-right py-2">{bicycle.totalRevenue.toFixed(2)} ₽</td>
                   </tr>
                 ))}
               </tbody>
@@ -144,25 +144,25 @@ export default function AdminPage() {
         )}
       </div>
 
-      {/* Category Stats */}
+      {/* Type Stats */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-4">Статистика по категориям</h2>
-        {stats.categoryStats && stats.categoryStats.length > 0 ? (
+        <h2 className="text-2xl font-bold mb-4">Статистика по типам велосипедов</h2>
+        {stats.typeStats && stats.typeStats.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-2">Категория</th>
+                  <th className="text-left py-2">Тип</th>
                   <th className="text-right py-2">Продано</th>
                   <th className="text-right py-2">Выручка</th>
                 </tr>
               </thead>
               <tbody>
-                {stats.categoryStats.map((cat: any) => (
-                  <tr key={cat.categoryId} className="border-b">
-                    <td className="py-2">{cat.categoryName}</td>
-                    <td className="text-right py-2">{cat.totalSold}</td>
-                    <td className="text-right py-2">{cat.totalRevenue.toFixed(2)} ₽</td>
+                {stats.typeStats.map((type: any) => (
+                  <tr key={type.typeId} className="border-b">
+                    <td className="py-2">{type.typeName}</td>
+                    <td className="text-right py-2">{type.totalSold}</td>
+                    <td className="text-right py-2">{type.totalRevenue.toFixed(2)} ₽</td>
                   </tr>
                 ))}
               </tbody>
