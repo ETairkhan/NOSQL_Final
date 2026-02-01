@@ -257,5 +257,30 @@ router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
   }
 });
 
+const Order = require('../models/Order');
+
+router.delete('/:id/hard', authenticate, authorize('admin'), async (req, res) => {
+  try {
+    const bicycle = await Bicycle.findById(req.params.id);
+    if (!bicycle) {
+      return res.status(404).json({ message: 'Bicycle not found' });
+    }
+
+    const hasOrders = await Order.exists({ 'items.bicycle': bicycle._id });
+    if (hasOrders) {
+      return res.status(400).json({
+        message: 'Cannot hard delete bicycle with existing orders'
+      });
+    }
+
+    await bicycle.deleteOne();
+    res.json({ message: 'Bicycle permanently deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
 module.exports = router;
 

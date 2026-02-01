@@ -200,5 +200,89 @@ router.delete('/:id', authenticate, async (req, res) => {
   }
 });
 
+router.patch('/:id/items', authenticate, async (req, res) => {
+  const { bicycle, quantity } = req.body;
+
+  const order = await Order.findOne({
+    _id: req.params.id,
+    user: req.user._id,
+    status: 'pending'
+  });
+
+  if (!order) {
+    return res.status(404).json({ message: 'Order not found or not editable' });
+  }
+
+  const bike = await Bicycle.findById(bicycle);
+  if (!bike || !bike.isActive) {
+    return res.status(400).json({ message: 'Bicycle not available' });
+  }
+
+  if (bike.stock < quantity) {
+    return res.status(400).json({ message: 'Insufficient stock' });
+  }
+
+  const price = bike.discountPrice > 0 ? bike.discountPrice : bike.price;
+  const subtotal = price * quantity;
+
+  await Order.findByIdAndUpdate(order._id, {
+    $push: {
+      items: {
+        bicycle,
+        quantity,
+        price,
+        subtotal
+      }
+    },
+    $inc: {
+      totalAmount: subtotal,
+      finalAmount: subtotal
+    }
+  });
+
+  await Bicycle.findByIdAndUpdate(bicycle, {
+    $inc: { stock: -quantity }
+  });
+
+  res.json({ message: 'Item added to order' });
+});
+
+router.delete('/:id/items/:bicycleId', authenticate, async (req, res) => {
+  const order = await Order.findOne({
+    _id: req.params.id,
+    user: req.user._id,
+    status: 'pending'
+  });
+
+  if (!order) {
+    return res.status(404).json({ message: 'Order not found or not editable' });
+  }
+
+  const item = order.items.find(
+    i => i.bicycle.toString() === req.params.bicycleId
+  );
+
+  if (!item) {
+    return res.status(404).json({ message: 'Item not found in order' });
+  }
+
+  await Order.findByIdAndUpdate(order._id, {
+    $pull: {
+      items: { bicycle: item.bicycle }
+    },
+    $inc: {
+      totalAmount: -item.subtotal,
+      finalAmount: -item.subtotal
+    }
+  });
+
+  await Bicycle.findByIdAndUpdate(item.bicycle, {
+    $inc: { stock: item.quantity }
+  });
+
+  res.json({ message: 'Item removed from order' });
+});
+
+
 module.exports = router;
 
