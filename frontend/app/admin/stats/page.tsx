@@ -250,7 +250,10 @@ const StatsAdminPage = () => {
               <h3 className="font-medium text-gray-900 mb-3">Rating distribution</h3>
               <div className="space-y-2">
                 {[5, 4, 3, 2, 1].map((rating) => {
-                  const ratingCount = reviewsStats.ratingDistribution[rating as keyof typeof reviewsStats.ratingDistribution];
+                  const ratingObj = reviewsStats.ratingDistribution.find(
+                    (item: any) => item.rating === rating
+                  );
+                  const ratingCount = ratingObj ? ratingObj.count : 0;
                   const percentage = reviewsStats.totalReviews > 0 
                     ? (ratingCount / reviewsStats.totalReviews) * 100 
                     : 0;

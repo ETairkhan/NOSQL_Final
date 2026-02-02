@@ -62,7 +62,7 @@ const BicyclesAdminPage = () => {
         bicyclesAPI.getAllBicycles(),
         bicycleTypesAPI.getAllTypes()
       ])
-      setBicycles(bicyclesResponse.data)
+      setBicycles(bicyclesResponse.data.bicycles || [])
       setTypes(typesResponse.data)
     } catch (error) {
       console.error('Failed to load data:', error)

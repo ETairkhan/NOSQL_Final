@@ -13,7 +13,7 @@ export default function BicyclesPage() {
     type: '',
     minPrice: '',
     maxPrice: '',
-    sort: 'newest',
+    sort: '-createdAt',
   })
   const [pagination, setPagination] = useState({
     page: 1,
@@ -144,10 +144,10 @@ export default function BicyclesPage() {
                   onChange={(e) => handleFilterChange('sort', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500"
                 >
-                  <option value="newest">Newest first</option>
-                  <option value="price_asc">Price: low to high</option>
-                  <option value="price_desc">Price: high to low</option>
-                  <option value="rating_desc">By rating</option>
+                  <option value="-createdAt">Newest first</option>
+                  <option value="price">Price: low to high</option>
+                  <option value="-price">Price: high to low</option>
+                  <option value="-ratingSummary.averageRating">By rating</option>
                 </select>
               </div>
             </div>

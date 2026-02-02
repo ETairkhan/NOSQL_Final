@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
+import { useCart } from '@/context/CartContext'
 import type { Bicycle, Review } from '@/types'
 
 export default function BicycleDetailPage() {
   const params = useParams()
   const router = useRouter()
   const { isAuthenticated } = useAuth()
+  const { addToCart } = useCart()
   const [bicycle, setBicycle] = useState<Bicycle | null>(null)
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
@@ -53,6 +55,12 @@ export default function BicycleDetailPage() {
       router.push('/login')
       return
     }
+    if (!bicycle) return
+    if (bicycle.stock < quantity) {
+      alert('Not enough stock available')
+      return
+    }
+    addToCart(bicycle, quantity)
     alert('Bicycle added to cart')
   }
 

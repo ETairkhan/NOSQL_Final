@@ -42,10 +42,17 @@ const CartPage = () => {
       const orderData = {
         items: state.items.map(item => ({
           bicycle: item.bicycle._id,
-          quantity: item.quantity,
-          price: item.bicycle.price
+          quantity: item.quantity
         })),
-        totalAmount: state.total
+        shippingAddress: {
+          street: '123 Main St',
+          city: 'Default City',
+          state: 'Default State',
+          zipCode: '12345',
+          country: 'Default Country'
+        },
+        paymentMethod: 'credit_card',
+        discount: 0
       }
 
       const response = await ordersAPI.create(orderData)

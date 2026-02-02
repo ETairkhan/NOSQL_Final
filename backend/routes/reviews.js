@@ -145,10 +145,11 @@ router.patch('/:id/helpful', authenticate, async (req, res) => {
 
 // @route   PUT /api/reviews/:id
 // @desc    Update a review
-// @access  Private (own review only)
+// @access  Private (own review only, or admin)
 router.put('/:id', authenticate, [
   body('rating').optional().isInt({ min: 1, max: 5 }),
-  body('comment').optional().trim().isLength({ max: 1000 })
+  body('comment').optional().trim().isLength({ max: 1000 }),
+  body('isVerified').optional().isBoolean()
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -156,7 +157,12 @@ router.put('/:id', authenticate, [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const review = await Review.findOne({ _id: req.params.id, user: req.user._id });
+    // Allow admins to update any review, others only their own
+    const query = req.user.role === 'admin' 
+      ? { _id: req.params.id }
+      : { _id: req.params.id, user: req.user._id };
+
+    const review = await Review.findOne(query);
     if (!review) {
       return res.status(404).json({ message: 'Review not found or access denied' });
     }
@@ -182,10 +188,15 @@ router.put('/:id', authenticate, [
 
 // @route   DELETE /api/reviews/:id
 // @desc    Delete a review
-// @access  Private (own review only)
+// @access  Private (own review only, or admin)
 router.delete('/:id', authenticate, async (req, res) => {
   try {
-    const review = await Review.findOne({ _id: req.params.id, user: req.user._id });
+    // Allow admins to delete any review, others only their own
+    const query = req.user.role === 'admin' 
+      ? { _id: req.params.id }
+      : { _id: req.params.id, user: req.user._id };
+
+    const review = await Review.findOne(query);
     if (!review) {
       return res.status(404).json({ message: 'Review not found or access denied' });
     }

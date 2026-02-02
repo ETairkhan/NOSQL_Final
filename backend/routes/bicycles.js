@@ -17,7 +17,24 @@ const allowedSortFields = [
   'ratingSummary.averageRating',
   '-ratingSummary.averageRating'
 ];
-router.get('/', [
+
+// Optional authentication middleware
+const optionalAuth = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7);
+    try {
+      const jwt = require('jsonwebtoken');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded;
+    } catch (err) {
+      // Invalid token, ignore
+    }
+  }
+  next();
+};
+
+router.get('/', optionalAuth, [
   query('page').optional().isInt({ min: 1 }),
   query('limit').optional().isInt({ min: 1, max: 100 }),
   query('type').optional().isMongoId(),
@@ -36,8 +53,8 @@ router.get('/', [
     const limit = parseInt(req.query.limit) || 12;
     const skip = (page - 1) * limit;
 
-    // Build query
-    const query = { isActive: true };
+    // Build query - show all for admin, only active for public
+    const query = req.user?.role === 'admin' ? {} : { isActive: true };
     
     if (req.query.type) {
       query.type = req.query.type;
