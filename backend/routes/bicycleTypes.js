@@ -5,6 +5,15 @@ const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * /api/types:
+ *   get:
+ *     summary: Get all bicycle types
+ *     tags: [Types]
+ */
+
+
 // @route   GET /api/types
 // @desc    Get all bicycle types
 // @access  Public
@@ -17,6 +26,15 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+/**
+ * @swagger
+ * /api/types/{id}:
+ *   get:
+ *     summary: Get bicycle type by ID
+ *     tags: [Types]
+ */
+
 
 // @route   GET /api/types/:id
 // @desc    Get single bicycle type
@@ -36,6 +54,17 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+/**
+ * @swagger
+ * /api/types:
+ *   post:
+ *     summary: Create bicycle type
+ *     tags: [Types]
+ *     security:
+ *       - bearerAuth: []
+ */
+
 
 // @route   POST /api/types
 // @desc    Create a new bicycle type
@@ -99,6 +128,17 @@ router.post('/', authenticate, authorize('admin'), [
   }
 });
 
+/**
+ * @swagger
+ * /api/types/{id}:
+ *   put:
+ *     summary: Update bicycle type
+ *     tags: [Types]
+ *     security:
+ *       - bearerAuth: []
+ */
+
+
 // @route   PUT /api/types/:id
 // @desc    Update a bicycle type
 // @access  Private (Admin only)
@@ -148,6 +188,17 @@ router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/types/{id}:
+ *   delete:
+ *     summary: Soft delete bicycle type
+ *     tags: [Types]
+ *     security:
+ *       - bearerAuth: []
+ */
+
+
 // @route   DELETE /api/types/:id
 // @desc    Delete a bicycle type
 // @access  Private (Admin only)
@@ -166,6 +217,63 @@ router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
     res.json({ message: 'Bicycle type deleted successfully', type });
   } catch (error) {
     console.error('Delete bicycle type error:', error);
+    if (error.name === 'CastError') {
+      return res.status(400).json({ message: 'Invalid bicycle type ID' });
+    }
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+const Bicycle = require('../models/Bicycle');
+
+/**
+ * @swagger
+ * /api/types/{id}/hard:
+ *   delete:
+ *     summary: Permanently delete bicycle type (hard delete)
+ *     tags: [Types]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Bicycle type permanently deleted
+ *       400:
+ *         description: Type has related bicycles
+ *       404:
+ *         description: Bicycle type not found
+ */
+
+
+/**
+ * @route   DELETE /api/types/:id/hard
+ * @desc    Permanently delete bicycle type (hard delete)
+ * @access  Private (Admin only)
+ */
+router.delete('/:id/hard', authenticate, authorize('admin'), async (req, res) => {
+  try {
+    const type = await BicycleType.findById(req.params.id);
+    if (!type) {
+      return res.status(404).json({ message: 'Bicycle type not found' });
+    }
+
+    // Check if bicycles with this type exist
+    const hasBicycles = await Bicycle.exists({ type: type._id });
+    if (hasBicycles) {
+      return res.status(400).json({
+        message: 'Cannot hard delete type with existing bicycles'
+      });
+    }
+
+    await type.deleteOne();
+    res.json({ message: 'Bicycle type permanently deleted' });
+  } catch (error) {
+    console.error('Hard delete bicycle type error:', error);
     if (error.name === 'CastError') {
       return res.status(400).json({ message: 'Invalid bicycle type ID' });
     }

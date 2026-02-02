@@ -63,6 +63,17 @@ router.get('/sales', authenticate, authorize('admin'), async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/stats/bicycles:
+ *   get:
+ *     summary: Get top selling bicycles
+ *     tags: [Statistics]
+ *     security:
+ *       - bearerAuth: []
+ */
+
+
 // @route   GET /api/stats/bicycles
 // @desc    Get top selling bicycles (Aggregation pipeline)
 // @access  Private (Admin only)
@@ -109,6 +120,17 @@ router.get('/bicycles', authenticate, authorize('admin'), async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+/**
+ * @swagger
+ * /api/stats/types:
+ *   get:
+ *     summary: Get sales statistics by bicycle type
+ *     tags: [Statistics]
+ *     security:
+ *       - bearerAuth: []
+ */
+
 
 // @route   GET /api/stats/types
 // @desc    Get sales by bicycle type (Aggregation pipeline)
@@ -162,6 +184,15 @@ router.get('/types', authenticate, authorize('admin'), async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+/**
+ * @swagger
+ * /api/stats/reviews:
+ *   get:
+ *     summary: Get review statistics
+ *     tags: [Statistics]
+ */
+
 
 // @route   GET /api/stats/reviews
 // @desc    Get review statistics (Aggregation pipeline)
@@ -245,6 +276,33 @@ router.get('/overview', authenticate, authorize('admin'), async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+/**
+ * @swagger
+ * /api/stats/sales:
+ *   get:
+ *     summary: Get sales statistics
+ *     tags: [Statistics]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Sales statistics
+ */
+
+/**
+ * @swagger
+ * /api/stats/overview:
+ *   get:
+ *     summary: Get system overview statistics
+ *     tags: [Statistics]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Overview statistics
+ */
+
 
 module.exports = router;
 

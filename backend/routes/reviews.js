@@ -7,9 +7,32 @@ const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();
 
-// @route   GET /api/reviews
-// @desc    Get reviews (optionally filtered by bicycle)
-// @access  Public
+/**
+ * @swagger
+ * tags:
+ *   name: Reviews
+ *   description: Reviews management
+ */
+
+/**
+ * @swagger
+ * /api/reviews:
+ *   get:
+ *     summary: Get all reviews
+ *     tags: [Reviews]
+ *     parameters:
+ *       - in: query
+ *         name: bicycle
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of reviews
+ */
 router.get('/', async (req, res) => {
   try {
     const query = {};
@@ -30,9 +53,24 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @route   GET /api/reviews/:id
-// @desc    Get single review
-// @access  Public
+/**
+ * @swagger
+ * /api/reviews/{id}:
+ *   get:
+ *     summary: Get review by ID
+ *     tags: [Reviews]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Review data
+ *       404:
+ *         description: Review not found
+ */
 router.get('/:id', async (req, res) => {
   try {
     const review = await Review.findById(req.params.id)
@@ -53,9 +91,38 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// @route   POST /api/reviews
-// @desc    Create a new review
-// @access  Private
+/**
+ * @swagger
+ * /api/reviews:
+ *   post:
+ *     summary: Create a review
+ *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [bicycle, rating]
+ *             properties:
+ *               bicycle:
+ *                 type: string
+ *               rating:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 5
+ *               title:
+ *                 type: string
+ *               comment:
+ *                 type: string
+ *               order:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Review created
+ */
 router.post('/', authenticate, [
   body('bicycle').isMongoId().withMessage('Valid bicycle ID required'),
   body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
@@ -69,19 +136,16 @@ router.post('/', authenticate, [
 
     const { bicycle, rating, title, comment, order } = req.body;
 
-    // Check if bicycle exists
     const bicycleExists = await Bicycle.findById(bicycle);
     if (!bicycleExists) {
       return res.status(404).json({ message: 'Bicycle not found' });
     }
 
-    // Check if user already reviewed this bicycle
     const existingReview = await Review.findOne({ user: req.user._id, bicycle });
     if (existingReview) {
       return res.status(400).json({ message: 'You have already reviewed this bicycle' });
     }
 
-    // Verify order if provided (mark review as verified)
     let isVerified = false;
     if (order) {
       const orderExists = await Order.findOne({
@@ -104,8 +168,6 @@ router.post('/', authenticate, [
     });
 
     await review.save();
-
-    // Update bicycle rating summary (aggregation)
     await updateBicycleRatingSummary(bicycle);
 
     await review.populate('user', 'username');
@@ -121,9 +183,24 @@ router.post('/', authenticate, [
   }
 });
 
-// @route   PATCH /api/reviews/:id/helpful
-// @desc    Mark review as helpful (Advanced update with $inc)
-// @access  Private
+/**
+ * @swagger
+ * /api/reviews/{id}/helpful:
+ *   patch:
+ *     summary: Mark review as helpful
+ *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Helpful count incremented
+ */
 router.patch('/:id/helpful', authenticate, async (req, res) => {
   try {
     const review = await Review.findByIdAndUpdate(
@@ -143,9 +220,15 @@ router.patch('/:id/helpful', authenticate, async (req, res) => {
   }
 });
 
-// @route   PUT /api/reviews/:id
-// @desc    Update a review
-// @access  Private (own review only, or admin)
+/**
+ * @swagger
+ * /api/reviews/{id}:
+ *   put:
+ *     summary: Update review
+ *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: []
+ */
 router.put('/:id', authenticate, [
   body('rating').optional().isInt({ min: 1, max: 5 }),
   body('comment').optional().trim().isLength({ max: 1000 }),
@@ -157,8 +240,7 @@ router.put('/:id', authenticate, [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    // Allow admins to update any review, others only their own
-    const query = req.user.role === 'admin' 
+    const query = req.user.role === 'admin'
       ? { _id: req.params.id }
       : { _id: req.params.id, user: req.user._id };
 
@@ -167,15 +249,13 @@ router.put('/:id', authenticate, [
       return res.status(404).json({ message: 'Review not found or access denied' });
     }
 
-    const updateData = req.body;
     const updatedReview = await Review.findByIdAndUpdate(
       req.params.id,
-      { $set: updateData },
+      { $set: req.body },
       { new: true, runValidators: true }
     ).populate('user', 'username').populate('bicycle', 'name slug');
 
-    // Update bicycle rating summary if rating changed
-    if (updateData.rating && updateData.rating !== review.rating) {
+    if (req.body.rating && req.body.rating !== review.rating) {
       await updateBicycleRatingSummary(review.bicycle);
     }
 
@@ -186,13 +266,18 @@ router.put('/:id', authenticate, [
   }
 });
 
-// @route   DELETE /api/reviews/:id
-// @desc    Delete a review
-// @access  Private (own review only, or admin)
+/**
+ * @swagger
+ * /api/reviews/{id}:
+ *   delete:
+ *     summary: Delete review
+ *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: []
+ */
 router.delete('/:id', authenticate, async (req, res) => {
   try {
-    // Allow admins to delete any review, others only their own
-    const query = req.user.role === 'admin' 
+    const query = req.user.role === 'admin'
       ? { _id: req.params.id }
       : { _id: req.params.id, user: req.user._id };
 
@@ -203,8 +288,6 @@ router.delete('/:id', authenticate, async (req, res) => {
 
     const bicycleId = review.bicycle;
     await Review.findByIdAndDelete(req.params.id);
-
-    // Update bicycle rating summary
     await updateBicycleRatingSummary(bicycleId);
 
     res.json({ message: 'Review deleted successfully' });
@@ -217,7 +300,7 @@ router.delete('/:id', authenticate, async (req, res) => {
   }
 });
 
-// Helper function to update bicycle rating summary
+// Helper function
 const updateBicycleRatingSummary = async (bicycleId) => {
   const stats = await Review.aggregate([
     { $match: { bicycle: bicycleId } },
@@ -230,22 +313,17 @@ const updateBicycleRatingSummary = async (bicycleId) => {
     }
   ]);
 
-  if (stats.length > 0) {
-    await Bicycle.findByIdAndUpdate(bicycleId, {
-      $set: {
-        'ratingSummary.averageRating': Math.round(stats[0].averageRating * 10) / 10,
-        'ratingSummary.totalReviews': stats[0].totalReviews
-      }
-    });
-  } else {
-    await Bicycle.findByIdAndUpdate(bicycleId, {
-      $set: {
-        'ratingSummary.averageRating': 0,
-        'ratingSummary.totalReviews': 0
-      }
-    });
-  }
+  await Bicycle.findByIdAndUpdate(bicycleId, {
+    $set: stats.length
+      ? {
+          'ratingSummary.averageRating': Math.round(stats[0].averageRating * 10) / 10,
+          'ratingSummary.totalReviews': stats[0].totalReviews
+        }
+      : {
+          'ratingSummary.averageRating': 0,
+          'ratingSummary.totalReviews': 0
+        }
+  });
 };
 
 module.exports = router;
-

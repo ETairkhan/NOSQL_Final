@@ -5,6 +5,12 @@ require('dotenv').config();
 
 const app = express();
 
+
+//swagger
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -48,6 +54,9 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://Abilkaiyr:Takanashi_1
   console.error('MongoDB connection error:', error);
   process.exit(1);
 });
+
+
+
 
 module.exports = app;
 

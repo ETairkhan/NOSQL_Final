@@ -5,6 +5,9 @@ const { authenticate, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
+
+
+
 // @route   GET /api/categories
 // @desc    Get all categories
 // @access  Public
@@ -17,6 +20,8 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+
 
 // @route   GET /api/categories/:id
 // @desc    Get single category
@@ -36,6 +41,9 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+
+
 
 // @route   POST /api/categories
 // @desc    Create a new category
@@ -70,6 +78,9 @@ router.post('/', authenticate, authorize('admin'), [
   }
 });
 
+
+
+
 // @route   PUT /api/categories/:id
 // @desc    Update a category
 // @access  Private (Admin only)
@@ -101,6 +112,8 @@ router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
   }
 });
 
+
+
 // @route   DELETE /api/categories/:id
 // @desc    Delete a category
 // @access  Private (Admin only)
@@ -125,6 +138,10 @@ router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+
+
+
 
 module.exports = router;
 

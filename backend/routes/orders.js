@@ -25,6 +25,17 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/orders/{id}:
+ *   get:
+ *     summary: Get order by ID
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ */
+
+
 // @route   GET /api/orders/:id
 // @desc    Get single order
 // @access  Private
@@ -161,6 +172,17 @@ router.patch('/:id/status', authenticate, authorize('admin'), [
   }
 });
 
+/**
+ * @swagger
+ * /api/orders/{id}:
+ *   delete:
+ *     summary: Cancel order
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ */
+
+
 // @route   DELETE /api/orders/:id
 // @desc    Cancel/Delete an order
 // @access  Private
@@ -282,6 +304,94 @@ router.delete('/:id/items/:bicycleId', authenticate, async (req, res) => {
 
   res.json({ message: 'Item removed from order' });
 });
+
+/**
+ * @swagger
+ * /api/orders:
+ *   post:
+ *     summary: Create a new order
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       201:
+ *         description: Order created
+ */
+
+/**
+ * @swagger
+ * /api/orders/{id}/items:
+ *   patch:
+ *     summary: Add item to order (push)
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Item added
+ */
+
+/**
+ * @swagger
+ * /api/orders/{id}/items/{bicycleId}:
+ *   delete:
+ *     summary: Remove item from order (pull)
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Item removed
+ */
+
+/**
+ * @swagger
+ * /api/orders:
+ *   get:
+ *     summary: Get orders (user or all for admin)
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of orders
+ */
+
+/**
+ * @swagger
+ * /api/orders/{id}/status:
+ *   patch:
+ *     summary: Update order status
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [pending, processing, shipped, delivered, cancelled]
+ *     responses:
+ *       200:
+ *         description: Order status updated
+ */
+
 
 
 module.exports = router;
