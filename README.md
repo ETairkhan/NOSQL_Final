@@ -526,7 +526,7 @@ Credentials will be created:
 
 ## 👥 Student Contributors
 
-Yermek Tairkhan - did Frontend, architecture, Backend parts
+Yermek Tairkhan - did Frontend, architecture, Backend parts.
 Abilkaiyr Uzbekbay - did Swagger, Backend parts
 
 ## 📄 License
